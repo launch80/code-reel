@@ -1,0 +1,162 @@
+{
+ "name": "reelproof_launch",
+ "w": 1920,
+ "h": 1080,
+ "fps": 60,
+ "bpm": 120,
+ "theme": {
+  "accent": "#e85d04",
+  "hot": "#ff3c00",
+  "bg": "#0b0b0c",
+  "cream": "#f4f1ea"
+ },
+ "hud": {
+  "brand": "REELPROOF",
+  "brand2": "LAUNCH80",
+  "series": "V1.0",
+  "line": "git://reelproof.dev/main"
+ },
+ "timeline": [
+  {
+   "scene": "terminal",
+   "dur": 3.0,
+   "name": "HOOK // GIT COMMIT",
+   "slams": [
+    0.5,
+    1.5
+   ],
+   "p": {
+    "prompt": "$ git commit -m \"v1.0\"",
+    "cmd": "reelproof render --source timeline.json",
+    "title": "REELPROOF // V1.0",
+    "rows": [
+     [
+      "BRANCH",
+      "main"
+     ],
+     [
+      "COMMIT",
+      "#a3f2c1"
+     ],
+     [
+      "SIZE",
+      "4.2 KB"
+     ],
+     [
+      "STATUS",
+      "CLEAN"
+     ]
+    ],
+    "progress": {
+     "label": "BUILDING ASSETS",
+     "pct": 100
+    }
+   }
+  },
+  {
+   "scene": "kinetic",
+   "dur": 2.5,
+   "name": "WORDS // COMMITTED RENDERED SHIPPED",
+   "slams": [
+    0.8,
+    1.6
+   ],
+   "p": {
+    "intro": "your launch video, in git.",
+    "words": [
+     [
+      "COMMITTED",
+      0,
+      ""
+     ],
+     [
+      "RENDERED",
+      1.2,
+      "ACCENT"
+     ],
+     [
+      "SHIPPED",
+      2.0,
+      ""
+     ]
+    ],
+    "note": "deterministic pipeline",
+    "stat": "3w -> 3m"
+   }
+  },
+  {
+   "scene": "split",
+   "dur": 4.0,
+   "name": "CONTRAST // OLD VS CODE",
+   "slams": [
+    1.0,
+    2.5
+   ],
+   "p": {
+    "header": "THE OLD WAY // THE CODE WAY",
+    "left": {
+     "title": "AFTER EFFECTS",
+     "rows": [
+      "3 WEEKS",
+      "EXPORTED MP4s",
+      "14 GB PROJECT FILES",
+      "FRAGILE"
+     ]
+    },
+    "right": {
+     "title": "TIMELINE.JSON",
+     "rows": [
+      "3 MINUTES",
+      "DETERMINISTIC",
+      "0 KB BLOAT",
+      "RE-RENDERABLE"
+     ],
+     "accent": true
+    }
+   }
+  },
+  {
+   "scene": "counter",
+   "dur": 3.0,
+   "name": "STATS // TIME REDUCTION",
+   "slams": [
+    1.5
+   ],
+   "p": {
+    "prompt": "calculate",
+    "promptArg": "efficiency_gain",
+    "kicker": "DESIGN HIRES SAVED",
+    "big": {
+     "from": 21,
+     "to": 3,
+     "fmt": "int"
+    },
+    "unit": "WEEKS",
+    "sub": "render time compressed",
+    "tagline": "code compiles faster than you click.",
+    "typing": "git push origin master"
+   }
+  },
+  {
+   "scene": "endcard",
+   "dur": 2.5,
+   "name": "OUTRO // LAUNCH80",
+   "slams": [
+    1.0
+   ],
+   "p": {
+    "tag": "REELPROOF",
+    "word1": "LAUNCH",
+    "word2": "80",
+    "serif": "ship it.",
+    "url": "launch80.com",
+    "footer": "\u00a9 2024 REELPROOF INC."
+   }
+  }
+ ],
+ "sources": {
+  "3 weeks to 3 minutes render time": "https://reelproof.dev/benchmarks",
+  "14 GB project files average": "https://adobe.com/ae-workflow-stats",
+  "0 design hires required": "https://launch80.com/case-studies"
+ }
+}
