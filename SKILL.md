@@ -7,6 +7,21 @@ description: Generate a motion graphics video ("reel") entirely in code — HTML
 
 Build a short motion-graphics video with no video editor: one HTML file draws every frame on a canvas, Playwright + headless Chromium captures frames at 60fps into ffmpeg, numpy synthesizes the soundtrack, ffmpeg muxes audio+video.
 
+## 0. Three ways to use this skill (pick one)
+
+| Mode | Who writes the content | Who writes scene code | How |
+|---|---|---|---|
+| **1 · Director** | an LLM composes the whole timeline from a written brief | nobody — the 8 shipped archetypes only | `python3 director.py --mode invent --brief brief.md --model <local-model>` |
+| **2 · Blueprint** | you + a local LLM, iterating in an agent session | the LLM writes NEW scene types in `scene_custom.js` | read `references/blueprints.md`; the LLM adds `defineScene('name', fn)` — never fork `reel.html` |
+| **3 · Fill-in-blank** | you (or the director pre-fills) | nobody | copy `templates/blank.json`, fill every `<SLOT>`, validate |
+
+All three converge on the same frozen `timeline.json` and the same deterministic pipeline (`validate.py` → `render.py` → `audio.py` → `build.sh` → `qc.py`). The LLM never produces pixels — it produces JSON; timing lives only in the frozen file. Mode 1/3 output is byte-reproducible; mode 2 adds a `scene_custom.js` beside the project files (validate with `--allow-custom`).
+
+```
+brief ──► director.py ──► timeline.json (+_meta.json) ──► validate.py ──► render.py ──► audio.py ──► build.sh ──► qc.py
+             (mode 1)        (mode 3: blank.json)          (mode 2: + scene_custom.js)      frames.mkv ─┘        reel.mp4 + qc_report.xlsx
+```
+
 ## 1. Collect parameters
 
 The user's request (or `/skill:code-reel ...` arguments) may include `key=value` pairs. Recognized keys and defaults:
@@ -34,11 +49,11 @@ If `brand` is given, extract real hex colors, font families and copy lines from 
 ```bash
 PROJ=<project-dir>            # e.g. ./reel-<slug>
 mkdir -p "$PROJ"
-cp <skill-dir>/templates/{reel.html,render.py,audio.py,build.sh,validate.py,timeline.json,requirements.txt} "$PROJ/"
+cp <skill-dir>/templates/{reel.html,render.py,audio.py,events.py,build.sh,validate.py,qc.py,director.py,timeline.json,blank.json,requirements.txt} "$PROJ/"
 cp -r <skill-dir>/fonts "$PROJ/fonts"
 ```
 
-One-time machine setup (check first; skip if already installed): `pip install -r requirements.txt`, `python -m playwright install chromium`, `ffmpeg` on PATH.
+One-time machine setup (check first; skip if already installed): `pip install -r requirements.txt` (playwright, numpy, openpyxl for the QC workbook; scipy optional), `python -m playwright install chromium`, `ffmpeg` on PATH.
 
 ## 3. Compose the timeline (no drawing code)
 
@@ -50,7 +65,7 @@ Core rules:
 - **Recolor via `theme`** (`accent`/`hot`/`bg`/`cream`) and relabel via `hud` (brand/series/line) — do not touch palette constants. `theme` recolors the whole reel including glows, flashes and the post layer.
 - **All times in `p` are relative to the scene start.** Kinetic word `offset`s, chart `impact`, quote `slam` must land on the beat grid (multiples of 0.5s at 120bpm) so hits land on beats.
 - **Validate before rendering:** `python3 validate.py` — checks required params, beat-grid cuts, whole-frame boundaries, and word/impact offsets. Never run a full render with a failing validation.
-- **If the user needs a scene type that doesn't exist**, add `REG.myscene = (lt, d, p) => {...}` to reel.html (all timing relative to `d`), reuse the motion primitives (`prog`, easings, `txt`, `tw`, `typed`, `rrect`, `rng`, `wipeLine`, `dashed`, `A()`/`Hh()` theme colors), register it in `validate.py` + `sceneSlams()`/`derive_events()` in audio.py, and document it in scenes.md. For new scene types: `DPR`-aware `shadowBlur` (`*DPR`), and measure the FINAL string with `tw()` before positioning labels next to counters.
+- **If the user needs a scene type that doesn't exist**, do NOT edit reel.html — create `scene_custom.js` in the project dir and add `defineScene('myscene', (lt, d, p) => {...})` (all timing relative to `d`). It runs in reel.html's scope, so every motion primitive is available (`prog`, easings, `txt`, `tw`, `typed`, `rrect`, `rng`, `wipeLine`, `dashed`, `A()`/`Hh()` theme colors, `W/H/DPR`). Then `python3 validate.py timeline.json --allow-custom`. Render stills of the new scene at 25/50/75/100% of its duration before trusting it. Use `DPR`-aware `shadowBlur` (`*DPR`) and measure the FINAL string with `tw()` before positioning labels next to counters. Add the scene's `slams` via the scene's `slams:[]` field or return-time events are automatic (cuts/impacts derive from timing). Full contract + worked example: `references/blueprints.md`.
 - **Vertical (9:16):** `"w":1080,"h":1920` in timeline.json + `OUT_W=1080 OUT_H=1920` in build.sh. The 16:9 scenes are laid out for 1920×1080; a 9:16 reel needs a vertical layout pass on the scenes (check stills closely).
 
 ## 4. Review loop (always, before full render)
@@ -64,6 +79,7 @@ Core rules:
    - text clipping outside its clip rect
 3. Fix, re-still only the changed times, then full render: `./build.sh` (or `OUT=... ./build.sh`). It runs render.py (LOSSLESS FFV1 `frames.mkv`, 2x res with `DPR=2`), audio.py (score derived from the timeline), then ONE lossy encode (Lanczos downscale, BT.709 tags, `yuv420p`, CRF 17 — override with `CRF=`, size with `OUT_W/OUT_H`). Expect ~6–10 min for 15s at 1080p60 with `DPR=2` (~3–4 min with `DPR=1`).
 4. After the full render, spot-check 3–4 frames from the MP4 (`ffmpeg -ss <t> -i reel.mp4 -frames:v 1 check.jpg`) and report the output path + duration to the user.
+5. **Run QC:** `python3 qc.py reel.mp4 timeline.json` — auto-measures the technical block (codecs, color tags, frame count, loudness via ebur128, black/freeze detection, fast-start) and writes `qc_report.md` + `qc_report.xlsx` (Summary / Test Sequence / Cue Sheet / Tech Specs / Fact Check). Audio-to-cut sync is exact by construction (render + audio share `events.py`); the Fact Check tab lists every on-screen string — numeric claims need a source before publishing (add a `"sources": {"claim": "url"}` map to timeline.json to auto-verify). Fix any FAIL, re-render, re-run. Details: `references/qc.md`.
 
 ## 5. Live preview
 

@@ -1,3 +1,4 @@
 playwright>=1.40
 numpy
-scipy  # optional, speeds up audio.py
+scipy      # optional, speeds up audio.py
+openpyxl   # qc.py workbook (qc_report.xlsx); markdown report works without it

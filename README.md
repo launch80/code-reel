@@ -57,6 +57,34 @@ Set up the code-reel skill and make me a video:
 The agent will edit `timeline.json` (the only file you touch), render stills
 for review, then `./build.sh` → `reel.mp4` (~15s, 1080p60, ~15 MB, ~11 min).
 
+## Three ways to use it
+
+| | Mode | Who writes the scenes | You do |
+|---|---|---|---|
+| **1** | **Director** | the **director LLM** — a local model (Ollama / vLLM / LM Studio / MLX) invents a `timeline.json` from your brief using the 8 shipped archetypes | paste a brief, review stills, approve |
+| **2** | **Blueprints** | you + a local LLM, in `scene_custom.js` — new scene types as JS functions that *reference the skill's own blueprint code* (`REG` in `reel.html`) so the style stays consistent | ask your agent: “read `references/blueprints.md` + the REG in `reel.html`, write a new scene in `scene_custom.js`” |
+| **3** | **Fill-in** | nobody — you fill the `<SLOT>`s in `templates/blank.json` | 30 seconds of typing; `validate.py` refuses to render while slots are unfilled |
+
+All three converge on the same pipeline:
+
+```
+brief ──> director.py ──> timeline.json ──> validate.py ──> render.py ──> audio.py ──> build.sh ──> reel.mp4 ──> qc.py
+          (mode 1)        (modes 2/3 edit     (contracts,    (stills       (derived     (single      (22 auto     (25 manual
+                           here, or            beat grid,     first,        from the     lossy       tests,       tests
+                           scene_custom.js)    slots)         then full)    same file)   encode)     xlsx)        pre-filled)
+```
+
+## QC — the 66-test discipline
+
+`python3 qc.py reel.mp4 timeline.json` measures what a machine can measure
+(tech specs, **color tags**, fast-start, black/freeze detection, EBU R128
+loudness, A/V length match) and pre-fills the rest for a human with exact
+timecodes (visual checks per scene, transitions, delivery, fact-check).
+Output: `qc_report.md` + a 5-tab `qc_report.xlsx` (Summary · Test Sequence ·
+Cue Sheet · Tech Specs · Fact Check). `READY TO PUBLISH?` only says yes when
+the auto-tests are clean **and** a human has resolved every manual row.
+See `references/qc.md`.
+
 ## How it works
 
 ```
@@ -101,12 +129,18 @@ python3 validate.py
 | File | Role |
 |---|---|
 | `templates/timeline.json` | **The reel.** Scenes, durations, content, theme, HUD. All timing lives here. |
+| `templates/blank.json` | Mode 3: the same structure with `<SLOT>` placeholders — fill them, `validate.py` refuses to pass while any remain. |
 | `templates/reel.html` | Player + scene registry + motion toolkit. Data-driven: reads the timeline (injected at render, fetched in preview). Also a standalone live preview with a scrubber. |
 | `templates/render.py` | Captures frames via canvas `toDataURL` → lossless FFV1 `frames.mkv` (or PNG stills). `DPR` env = supersampling factor (default 2). |
 | `templates/audio.py` | Synthesizes `audio.wav` from the timeline: beats at `bpm`, kick/hat/pad, risers at cuts, impacts at slams, typing clicks, counter ticks, bell. |
-| `templates/validate.py` | Checks the timeline against the scene contracts: required params, beat-grid cuts, whole-frame boundaries, word/impact offsets. |
-| `templates/build.sh` | Single lossy encode: `frames.mkv` → Lanczos → `yuv420p` → `setparams` BT.709 tags → libx264. |
+| `templates/events.py` | The single event derivation both audio and QC import — sync is by construction, not by luck. |
+| `templates/validate.py` | Checks the timeline against the scene contracts: required params, beat-grid cuts, whole-frame boundaries, word/impact offsets, unfilled slots. |
+| `templates/director.py` | Mode 1: brief → local LLM → validated `timeline.json` + `timeline_meta.json` (model, seed, hash, repair round). Runtime-agnostic. |
+| `templates/qc.py` | Post-render QC: 22 measured tests + 25 pre-filled manual tests → `qc_report.md` + `qc_report.xlsx`. |
+| `templates/build.sh` | Single lossy encode: `frames.mkv` → Lanczos → `yuv420p` → `setparams` BT.709 tags → two-pass loudnorm −14 LUFS → libx264 faststart. |
 | `references/scenes.md` | The scene params contract (what each `p` key does). |
+| `references/blueprints.md` | Mode 2: how to write new scene types in `scene_custom.js` against the template's own helpers. |
+| `references/qc.md` | The QC test list, what's measured vs manual, and the fact-check rules. |
 | `prompts/` | Ready-made prompts for generating reels with this skill. |
 | `fonts/` | Self-hosted woff2 (DM Sans, DM Mono, Instrument Serif, Russo One). |
 
@@ -146,10 +180,11 @@ look-check.
 ## Making a different reel
 
 1. Copy `templates/` (or let the skill do it).
-2. Edit `timeline.json`: pick scenes, order them, give each a content object,
-   keep every `dur` on the beat grid (multiples of `60/bpm`).
+2. Pick a mode: run the **director** (mode 1), fill `blank.json` (mode 3), or
+   edit `timeline.json` directly (or add a scene in `scene_custom.js`, mode 2).
+   Keep every `dur` on the beat grid (multiples of `60/bpm`).
 3. `python3 validate.py` → `python3 render.py stills 0.8,3.4,5.6,8.5,11.9,14.0`
-   → review → `./build.sh`.
-4. New scene types: add `REG.myscene = (lt, d, p) => {...}` to `reel.html`
-   (timing relative to `d`), register it in `validate.py` + `audio.py`,
-   document in `references/scenes.md`.
+   → review → `./build.sh` → `python3 qc.py reel.mp4 timeline.json`.
+4. New scene types: write `defineScene('name', fn)` in `scene_custom.js`
+   (see `references/blueprints.md`), `validate.py --allow-custom`, and it
+   renders with zero changes to the template.

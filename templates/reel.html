@@ -498,6 +498,31 @@ function render(t){
 window.render=render;
 window.buildTimeline=buildTimeline;
 
+// ================= CUSTOM SCENES (mode 2: the blueprint path) =================
+// A project-local scene_custom.js can add scene types WITHOUT touching this
+// file. It runs in this script's scope, so every motion helper is available:
+//   defineScene('orbit', (lt, d, p) => { ... });   // lt = local time in scene,
+//   // d = scene duration, p = params from timeline. Draw with txt/tw/rrect/
+//   // typed/rng/prog/ease/C/W/H/DPR — same contract as the built-in REG types.
+// Rules: draw only inside [0, d); never mutate SC/CUTS/IMPACTS; keep text
+// inside 90% safe area; validate.py accepts types declared in scene_custom.js.
+window.defineScene=(name,fn)=>{
+  if(!/^[a-z][a-z0-9_]*$/.test(name))throw new Error('defineScene: bad name '+name);
+  if(REG[name])throw new Error('defineScene: built-in type '+name+' cannot be overridden');
+  REG[name]=fn;
+};
+async function loadCustomScenes(){
+  // optional file — silent 404 is fine. MUST be a <script> tag, not fetch():
+  // fetch on file:// is CORS-blocked even with --allow-file-access-from-files,
+  // while classic scripts run fine and see this script's top-level let/const
+  // bindings (they live in the global lexical scope).
+  return new Promise(res=>{
+    const s=document.createElement('script');s.src='scene_custom.js';
+    s.onload=()=>{window.__CUSTOM_SCENES__=true;res()};s.onerror=res;
+    document.head.appendChild(s);
+  });
+}
+
 // ---------- timeline loading: window.__TIMELINE__ (injected by render.py) or fetch ----------
 async function loadTimeline(){
   if(window.__TIMELINE__)return window.__TIMELINE__;
@@ -508,6 +533,7 @@ window.ready=(async()=>{
   const tl=await loadTimeline();
   if(!tl){const e=document.getElementById('err');e.style.display='grid';
     e.textContent='timeline.json not found — run render.py (it injects the timeline) or serve this folder with python -m http.server';return false}
+  await loadCustomScenes();
   buildTimeline(tl);
   const fs=[`400 20px ${SANS}`,`700 20px ${SANS}`,`800 20px ${SANS}`,`400 20px ${MONO}`,`500 20px ${MONO}`,`400 20px ${SERIF}`,`italic 400 20px ${SERIF}`,`20px ${DISP}`];
   for(const f of fs)await document.fonts.load(f);
