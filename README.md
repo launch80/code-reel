@@ -10,6 +10,22 @@ soundtrack from the same timeline that drives the animation.
 
 ![Example reel: Local vs Frontier](assets/example-local-vs-frontier.gif)
 
+## What this is / isn't
+
+**Is**: a code-driven motion-graphics pipeline for launch reels, product promos
+and data stories — kinetic type, terminals, stat cards, counters, charts,
+quotes, splits, endcards — plus a deterministic cinematic post layer (ACES tone
+mapping, shutter motion blur, bloom, grain, lens treatment) and an optional
+local-LLM *director* that turns a written brief into a validated `spec.json`.
+Every pixel comes from deterministic renderer code; the LLM never touches
+pixels, only the spec.
+
+**Isn't**: a general video generator. No illustration, no footage, no video
+models, no photoreal humans — "a penguin riding a bicycle through town" is out
+of scope. If a request needs pixels that aren't typography, charts, geometry
+or procedural camera effects, this skill can't produce them. The skill repo's
+README prompt deliberately advertises that boundary so users aren't surprised.
+
 ## Get started (paste this to your agent)
 
 Paste this into any agent session that can run shell commands (Claude Code,
