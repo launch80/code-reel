@@ -1,0 +1,331 @@
+{
+ "name": "LOCAL VS FRONTIER",
+ "w": 1920,
+ "h": 1080,
+ "fps": 60,
+ "bpm": 120,
+ "theme": {
+  "accent": "#e85d04",
+  "hot": "#ff8a3d",
+  "bg": "#0b0b0c",
+  "cream": "#faf9f7"
+ },
+ "hud": {
+  "brand": "LAUNCH",
+  "brand2": "80",
+  "series": "LOCAL VS FRONTIER",
+  "line": "OWN YOUR MODELS"
+ },
+ "timeline": [
+  {
+   "scene": "terminal",
+   "dur": 1.5,
+   "name": "BOOT",
+   "p": {
+    "prompt": "launch80:~$",
+    "cmd": "./compare --local --vs-frontier --since 2026",
+    "title": "zsh \u2014 1920\u00d71080",
+    "rows": [
+     [
+      "your prompts",
+      "never leave the box"
+     ],
+     [
+      "your bills",
+      "$0.00 / token"
+     ],
+     [
+      "your models",
+      "never silently deleted"
+     ],
+     [
+      "your hardware",
+      "already in the room"
+     ]
+    ],
+    "progress": {
+     "label": "booting",
+     "pct": 100
+    }
+   }
+  },
+  {
+   "scene": "kinetic",
+   "dur": 2.5,
+   "name": "KINETIC",
+   "p": {
+    "intro": "the frontier is great \u2014 at spending your data",
+    "words": [
+     [
+      "PRIVATE.",
+      0.5,
+      "",
+      "your prompts never leave",
+      "0 uploads"
+     ],
+     [
+      "FREE.",
+      1.0,
+      "",
+      "no per-token billing",
+      "$0/mo"
+     ],
+     [
+      "YOURS.",
+      1.5,
+      "ACCENT",
+      "no kill-switch, no drift",
+      "pinned forever"
+     ]
+    ]
+   }
+  },
+  {
+   "scene": "cards",
+   "dur": 3.0,
+   "name": "THE TRADE",
+   "p": {
+    "header": "// THE TRADE-OFF NOBODY SAYS OUT LOUD",
+    "kicker": "the trade, in numbers",
+    "cards": [
+     {
+      "tag": "COST \u00b7 1M TOKENS/DAY",
+      "big": {
+       "from": 312,
+       "to": 0,
+       "fmt": "d"
+      },
+      "unit": "/yr",
+      "sub": "frontier API vs one RTX 3090",
+      "label": "the invoice shrinks",
+      "viz": "bars"
+     },
+     {
+      "tag": "PRIVACY \u00b7 REQUESTS",
+      "big": {
+       "from": 0,
+       "to": 100,
+       "fmt": "int"
+      },
+      "unit": "%",
+      "sub": "local never leaves \u00b7 cloud uploaded",
+      "label": "residency",
+      "viz": "kv"
+     },
+     {
+      "tag": "AVAILABILITY \u00b7 PER YEAR",
+      "big": {
+       "from": 41,
+       "to": 300,
+       "fmt": "int"
+      },
+      "unit": "h+",
+      "sub": "3 outages \u00b7 1 deprecation",
+      "label": "frontier downtime",
+      "viz": "ctx"
+     }
+    ],
+    "ticker": {
+     "label": "LOG",
+     "items": [
+      "model deprecated",
+      "API 503",
+      "ToS v14",
+      "rate limit hit",
+      "invoice +$180",
+      "region outage",
+      "went local"
+     ]
+    }
+   }
+  },
+  {
+   "scene": "counter",
+   "dur": 3.0,
+   "name": "FROM THE LAB",
+   "p": {
+    "prompt": "~/launch80 $",
+    "promptArg": "[@dev]",
+    "kicker": "the lab \u2014",
+    "big": {
+     "from": 27,
+     "to": 100,
+     "fmt": "int"
+    },
+    "unit": "PRIVATE",
+    "sub": "PROMPTED LOCALLY",
+    "tagline": "NO RATE LIMIT \u00b7 NO LOGGING \u00b7 NO REVIEW",
+    "typing": "[@dev] frontier model deprecated my fine-tune \u2014 went local the same week",
+    "scope": [
+     -0.0124,
+     0.019,
+     0.0538,
+     0.0098,
+     -0.0247,
+     -0.0673,
+     -0.0342,
+     -0.0092,
+     0.0695,
+     0.0867,
+     0.0542,
+     -0.0043,
+     -0.0206,
+     0.0042,
+     0.0338,
+     0.0502,
+     0.0641,
+     0.0796,
+     0.0385,
+     0.0148,
+     0.0133,
+     0.0388,
+     0.0995,
+     0.0965,
+     0.1059,
+     0.0608,
+     0.007,
+     0.0576,
+     0.0845,
+     0.1068,
+     0.1164,
+     0.1176,
+     0.094,
+     0.0755,
+     0.0856,
+     0.1166,
+     0.1697,
+     0.1868,
+     0.1631,
+     0.1259,
+     0.1215,
+     0.1141,
+     0.1434,
+     0.1912,
+     0.2154,
+     0.175,
+     0.1702,
+     0.1447,
+     0.1762,
+     0.2031,
+     0.2378,
+     0.2518,
+     0.2149,
+     0.1916,
+     0.1788,
+     0.2285,
+     0.2806,
+     0.2859,
+     0.3309,
+     0.2922,
+     0.2443,
+     0.2288,
+     0.2429,
+     0.3347,
+     0.3345,
+     0.3862,
+     0.3562,
+     0.3026,
+     0.3032,
+     0.3076,
+     0.3481,
+     0.4113,
+     0.4023,
+     0.3844,
+     0.3681,
+     0.3606,
+     0.376,
+     0.4126,
+     0.4572,
+     0.4909,
+     0.4761,
+     0.4391,
+     0.4221,
+     0.4561,
+     0.4855,
+     0.5168,
+     0.5255,
+     0.522,
+     0.4944,
+     0.5013,
+     0.5012,
+     0.5692,
+     0.5971,
+     0.5877,
+     0.565,
+     0.5699,
+     0.5687,
+     0.5889,
+     0.6098,
+     0.6645,
+     0.6688,
+     0.6549,
+     0.6404,
+     0.6364,
+     0.6308,
+     0.6898,
+     0.7442,
+     0.74,
+     0.7227,
+     0.6718,
+     0.697,
+     0.7142,
+     0.7732,
+     0.8058,
+     0.8316,
+     0.8127,
+     0.7745,
+     0.7715,
+     0.7852,
+     0.8468,
+     0.8923
+    ]
+   }
+  },
+  {
+   "scene": "chart",
+   "dur": 2.5,
+   "name": "THE COMMUNITY",
+   "p": {
+    "line": "and the people who left didn't go back.",
+    "grow": [
+     2,
+     160,
+     430,
+     780,
+     1120,
+     1440,
+     1760,
+     2000
+    ],
+    "months": [
+     "FEB",
+     "MAR",
+     "APR",
+     "MAY",
+     "JUN",
+     "JUL",
+     "AUG",
+     "SEP"
+    ],
+    "label": "LOCAL AI BUILDERS",
+    "sub": "EST. FEB 2026",
+    "max": 2000,
+    "impact": 1.8,
+    "seed": 1
+   }
+  },
+  {
+   "scene": "endcard",
+   "dur": 2.5,
+   "name": "LAUNCH80",
+   "p": {
+    "tag": "THE FRONTIER RENTERS COMPUTE. YOU OWN YOURS.",
+    "word1": "launch",
+    "word2": "80",
+    "serif": "local ai, dialed in.",
+    "url": "launch80.com",
+    "footer": "SHOWREEL \u00b7 LOCAL VS FRONTIER \u00b7 2026"
+   }
+  }
+ ]
+}

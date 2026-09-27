@@ -1,0 +1,8 @@
+frames.mkv
+audio.wav
+reel.mp4
+*.mp4
+stills/
+.venv/
+__pycache__/
+.DS_Store
