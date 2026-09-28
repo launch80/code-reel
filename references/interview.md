@@ -2,32 +2,49 @@
 
 The skill opens by interviewing the user, not by writing files. Goal: collect
 the decisions that drive the pipeline (mode, content, format, look, quality,
-facts) in **one round**, then echo them back as a frozen brief and proceed.
+facts) through a short **interactive conversation** — one question at a time —
+then echo them back as a frozen brief and proceed.
 
 ## Rules of the interview
 
-1. **One message, numbered questions, defaults on every question.** Never
-   drip-feed — the user must be able to answer "all defaults" or "1, 4, 7"
-   in a single reply.
-2. **Never ask what you already know.** If the request already answers a
-   question (topic, aspect, numbers, brand), skip it. Interview about the
-   *gaps*, not the transcript.
-3. **Every question must drive a knob.** If an answer wouldn't change a file,
-   a flag or an env var, don't ask it. (That's why there's no "what music
-   vibe do you want?" — the score is derived, there is nothing to choose.)
-4. Offer choices, not essays: 2–4 options per question, lettered, with the
+1. **One question per message.** Ask, then stop and wait. Never dump the
+   seven questions as a form. This is a conversation, not a spec sheet —
+   use the platform's interactive prompt/question tool if it has one.
+2. **Every question carries its default and its cost**, so a one-word answer
+   ("yeah", "b", "15s") is always sufficient. The user should never have to
+   write a paragraph to get moving.
+3. **Follow up when an answer opens a door.** "Match our brand" → *which
+   site?* "We have a member count" → *what's the number and where does it
+   come from?* A follow-up is one short question, not a new interview.
+4. **Never ask what you already know.** If the request already answers a
+   question (topic, aspect, numbers, brand), acknowledge it in one line
+   ("got it — 16:9, 15 s") and move on. Interview about the *gaps*, not the
+   transcript.
+5. **Every question must drive a knob.** If an answer wouldn't change a
+   file, a flag or an env var, don't ask it. (That's why there's no "what
+   music vibe do you want?" — the score is derived, there is nothing to
+   choose.)
+6. Offer choices, not essays: 2–4 options per question, lettered, with the
    recommended one marked `(recommended)`.
-5. **Close the loop before building**: echo the decision table (below), say
+7. **Close the loop before building**: echo the decision table (below), say
    what happens next (validate → stills → approval → full render → QC), and
-   wait for the go. If the user said "just do it / surprise me", still echo
-   the table — with defaults — but don't wait.
-6. **Save the brief.** Write the decision table to `brief.md` in the project
+   wait for the go. If at any point the user says "just do it / surprise me
+   / stop asking", stop asking: fill the remaining answers with defaults,
+   echo the table, and proceed.
+8. **Save the brief.** Write the decision table to `brief.md` in the project
    dir. In mode 1 it becomes `director.py --brief brief.md` verbatim; in the
    fact-check it's the human record of what was asked and promised.
+9. **Time-box it.** The whole interview should take under two minutes. If a
+   question has stalled (user is away, or doesn't know), take the default,
+   note it as *assumed* in the table, and keep going — the stills review is
+   where things actually get corrected.
 
 ## The question bank
 
-Ask each gap as one numbered item. `→` marks the knob it drives.
+Ask one at a time, in this order, skipping any already answered. `→` marks
+the knob it drives. Question 4 is the one worth slowing down for — dig with
+short follow-ups until every on-screen number has a source or is marked a
+placeholder.
 
 **1. What is this reel for?** One product/event, one sentence — who should
 watch it and what should they do after? Nothing else goes in this reel.
@@ -102,7 +119,7 @@ watch it and what should they do after? Nothing else goes in this reel.
 
 ## What the interview must NOT become
 
-- Not a requirements doc. Seven questions, one round, done.
+- Not a requirements doc, and not a form. One question, one answer, next.
 - Not a design consultation. Offer defaults; let them pick.
 - Not a gate when the user already gave the answers — the interview is a
   parser for what's missing, not a ritual.

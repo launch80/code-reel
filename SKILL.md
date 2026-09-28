@@ -7,7 +7,7 @@ description: Generate a motion graphics video ("reel") entirely in code — HTML
 
 Build a short motion-graphics video with no video editor: one HTML file draws every frame on a canvas, Playwright + headless Chromium captures frames at 60fps into ffmpeg, numpy synthesizes the soundtrack, ffmpeg muxes audio+video.
 
-**Step 0 of every run: run the interview** (`references/interview.md`) — one round, defaults on every question, decisions echoed back and saved to `brief.md` before anything is scaffolded.
+**Step 0 of every run: interview the user** (`references/interview.md`) — interactively, one question at a time with defaults offered, follow-ups when an answer opens a door; decisions echoed as a table and saved to `brief.md` before anything is scaffolded.
 
 ## 0. Three ways to use this skill (pick one)
 
@@ -26,9 +26,9 @@ brief ──► director.py ──► timeline.json (+_meta.json) ──► vali
 
 ## 1. Interview first (always — before any file is written)
 
-**Open every invocation with the interview.** Read `references/interview.md` and run it: one message, up to 7 numbered questions, each with a default, covering the knobs that drive the pipeline — topic, platform/aspect, duration, on-screen claims + sources, who writes the story (director / agent / fill-in / blueprint), look (palette/HUD/grain/audio), and render plan (draft→approve→final vs straight-to-final). Then close by echoing the decision table and what happens next.
+**Open every invocation with an interactive interview.** Read `references/interview.md` and run it: one question per message, conversational — never a form dump. Cover the knobs that drive the pipeline — topic, platform/aspect, duration, on-screen claims + sources, who writes the story (director / agent / fill-in / blueprint), look (palette/HUD/grain/audio), and render plan (draft→approve→final vs straight-to-final). Follow up briefly when an answer opens a door ("match our brand" → *which site?*); skip questions the request already answered; take defaults when the user is stuck or says "just do it". Close by echoing the decision table and what happens next.
 
-- **Only ask about gaps.** The request may already contain `key=value` pairs or plain prose that answers questions — parse those, skip answered rows, ask only the remainder. If the user says "just do it"/"surprise me", use the defaults, still echo the table, and proceed without waiting.
+- **One question per message, then wait.** Only ask about gaps — if the request already contains `key=value` pairs or prose that answers a question, acknowledge in one line and move on. Follow-ups are allowed but stay short (one question). If the user says "just do it"/"surprise me"/"stop asking" at any point, fill the rest with defaults, echo the table, and proceed without waiting.
 - **Never ask what doesn't change a file** — the score is derived, so there is no music question; aspect changes `OUT_W/OUT_H`; DPR changes wall-clock time; claims feed the QC fact-check.
 - **Save the answers to `brief.md`** in the project dir — in mode 1 that exact file is the `director.py --brief` input, and it is the human record behind the QC fact-check.
 

@@ -36,10 +36,10 @@ tagline:
 ```text
 Set up the code-reel skill and make me a video:
 
-0. First run the interview (references/interview.md): one round, 7
-   questions, defaults on each — topic, platform, length, claims +
-   sources, who writes the story, look, render plan. Echo the decision
-   table back before building anything.
+0. First interview me (references/interview.md): one question at a time,
+   defaults on each — topic, platform, length, claims + sources, who writes
+   the story, look, render plan. Echo the decision table back before
+   building anything.
 
 1. git clone https://github.com/launch80/code-reel.git ~/.agents/skills/code-reel
    (if it already exists, git pull instead). The skill is discovered at
@@ -59,10 +59,11 @@ Set up the code-reel skill and make me a video:
    full DPR=2 build and hand me the final MP4.
 ```
 
-The agent will interview you once (one message, defaults on every question —
-answer "all defaults" to skip ahead), save your answers to `brief.md`, edit
-`timeline.json` (the only file you touch), render stills for review, then
-`./build.sh` → `reel.mp4` → `qc.py` (~15s, 1080p60, ~15 MB, ~11 min).
+The agent will interview you — one question at a time, each with a default,
+so "yeah" is always a valid answer (say "just do it" and it fills the rest
+itself) — save your answers to `brief.md`, edit `timeline.json` (the only
+file you touch), render stills for review, then `./build.sh` → `reel.mp4` →
+`qc.py` (~15s, 1080p60, ~15 MB, ~11 min).
 
 ## Three ways to use it
 
