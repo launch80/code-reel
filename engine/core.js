@@ -28,6 +28,7 @@ let CAPS = true;                 // style: uppercase mono labels
 let GLOW = 1;                    // style: glow multiplier (0 on light/print looks)
 let SELF_EXIT = true;            // player sets false when the outgoing transition handles the exit
 let CUR_SCENE = '';              // for audit attribution
+let T_ABS = 0, SCENE_T0 = 0;     // world clock: absolute reel time + current scene start (continuity across cuts)
 
 // ---------------------------------------------------------------- math
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));

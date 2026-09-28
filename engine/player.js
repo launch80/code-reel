@@ -46,7 +46,7 @@ function drawFrame(target, t, i, lt, selfExit, fi, imp) {
   (BG[look.bg] || BG.solid)(t, Object.assign({ boost }, look.bgOpts || {}));
   const cam = (CAM[look.camera] || CAM.static)(t, clamp(lt / d), imp, fi);
   ctx.save(); ctx.translate(W / 2 + cam.x, H / 2 + cam.y); ctx.rotate(cam.r || 0); ctx.scale(cam.z, cam.z); ctx.translate(-W / 2, -H / 2);
-  SELF_EXIT = selfExit; CUR_SCENE = (s.name || s.scene);
+  SELF_EXIT = selfExit; CUR_SCENE = (s.name || s.scene); T_ABS = t; SCENE_T0 = s.t0;
   REG[s.scene](Math.max(0, lt), d, s.p || {});
   ctx.restore();
 }

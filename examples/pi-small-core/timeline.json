@@ -1,0 +1,112 @@
+{
+ "version": 2,
+ "name": "pi \u2014 small core",
+ "w": 1920,
+ "h": 1080,
+ "fps": 60,
+ "seed": 4242,
+ "style": {
+  "pack": "swiss",
+  "palette": {
+   "bg": "#0d1116",
+   "surf": "#161d27",
+   "line": "#2a333d",
+   "text": "#ebe7e4",
+   "mute": "#9fa4ab",
+   "accent": "#6a9fcc",
+   "hot": "#F1BE58",
+   "cream": "#ffffff"
+  },
+  "fadeTo": "#000000"
+ },
+ "hud": {
+  "brand": "pi",
+  "brand2": ".dev",
+  "series": "",
+  "line": ""
+ },
+ "timeline": [
+  {
+   "scene": "monolith",
+   "beats": 6,
+   "name": "THE QUESTION",
+   "slams": [
+    2.0
+   ],
+   "p": {
+    "slab": "AGENT",
+    "question": "What if your agent were small?"
+   }
+  },
+  {
+   "scene": "core_split",
+   "beats": 8,
+   "name": "SMALL CORE",
+   "transition": "cut",
+   "slams": [
+    0.5
+   ],
+   "p": {
+    "core": "pi",
+    "plugins": [
+     "prompt templates",
+     "skills",
+     "extensions",
+     "themes",
+     "packages",
+     "TypeScript SDK"
+    ],
+    "caption": "a tiny core. everything else plugs in."
+   }
+  },
+  {
+   "scene": "tile_tally",
+   "beats": 8,
+   "name": "THE PARTS BIN",
+   "transition": {
+    "type": "push",
+    "dir": "up"
+   },
+   "p": {
+    "cells": "@ext_examples",
+    "cells_label": "{{ext_examples}} extension examples",
+    "side": [
+     {
+      "value": "@docs_pages",
+      "label": "docs pages"
+     },
+     {
+      "value": "@keybindings",
+      "label": "keybindings"
+     }
+    ],
+    "source": "measured from @earendil-works/pi-coding-agent {{version}}"
+   }
+  },
+  {
+   "scene": "adapt_line",
+   "beats": 4,
+   "name": "ADAPT",
+   "transition": "shutter",
+   "p": {
+    "line": "Adapt Pi to your workflow, not the other way around.",
+    "emphasis": [
+     "your",
+     "workflow"
+    ]
+   }
+  },
+  {
+   "scene": "install_end",
+   "beats": 4,
+   "name": "INSTALL",
+   "transition": "cut",
+   "p": {
+    "cmd": "npm i -g @earendil-works/pi-coding-agent",
+    "url": "pi.dev",
+    "version": "v{{version}}",
+    "tag": "a minimal, extensible AI agent for the terminal"
+   }
+  }
+ ]
+}

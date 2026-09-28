@@ -70,6 +70,19 @@ def rng(seed):
 
 
 # ------------------------------------------------------------------ custom scenes
+def scene_files(proj):
+    """All project JS in load order: scenes/_*.js (shared helpers) first, then scenes/*.js, then legacy files."""
+    files = []
+    sd = os.path.join(proj, "scenes")
+    if os.path.isdir(sd):
+        js = [f for f in os.listdir(sd) if f.endswith(".js")]
+        files += [os.path.join(sd, f) for f in sorted(js, key=lambda f: (not f.startswith("_"), f))]
+    for legacy in ("scene_custom.js", "scenes_custom.js"):
+        if os.path.exists(os.path.join(proj, legacy)):
+            files.append(os.path.join(proj, legacy))
+    return files
+
+
 def custom_scenes(proj):
     """{name: {file, meta}} for every defineScene in project scenes/*.js (+ legacy scene_custom.js)."""
     out = {}
@@ -255,6 +268,8 @@ def compile_project(proj, final=False, write=True, engine_sync=True):
             errs.append("claims.json: '%s' has no source/url (required for --final)" % cid)
         elif not (c.get("source") or c.get("url")):
             warns.append("claims.json: '%s' has no source yet" % cid)
+        if str(c.get("status", "")).lower() in ("placeholder", "illustrative", "todo"):
+            (errs if final else warns).append("claims.json: '%s' is marked %s — replace it with a measured value before --final" % (cid, c["status"]))
 
     style = expand_style(tl, errs)
     W, H = int(tl.get("w", 1920)), int(tl.get("h", 1080))
@@ -280,6 +295,20 @@ def compile_project(proj, final=False, write=True, engine_sync=True):
         bad = node_check(c["file"])
         if bad:
             errs.append("%s: JavaScript syntax error:\n%s" % (os.path.basename(c["file"]), bad))
+    for f in scene_files(proj):
+        if f not in {c["file"] for c in custom.values()}:
+            bad = node_check(f)
+            if bad:
+                errs.append("%s: JavaScript syntax error:\n%s" % (os.path.basename(f), bad))
+    STR_RE = re.compile(r"'([^'\\\n]{2,80})'|\"([^\"\\\n]{2,80})\"")
+    for f in scene_files(proj):
+        for ln, line_ in enumerate(open(f), 1):
+            if line_.strip().startswith("//"):
+                continue
+            for m in STR_RE.finditer(line_):
+                sv = m.group(1) or m.group(2)
+                if re.search(r"\d", sv) and re.search(r"[A-Za-z$%€£]", sv) and (" " in sv.strip() or re.search(r"[$%€£]", sv)) and not re.search(r"\d+(px|ms|deg)|rgba?\(|#[0-9a-f]{3}|@meta|\$\{", sv):
+                    (errs if final else warns).append("%s:%d hard-codes on-screen text with a number: %r — pass it in as a param so compile can check it" % (os.path.basename(f), ln, sv))
     metas = dict(bp)
     for name, c in custom.items():
         metas.setdefault(name, c["meta"])
@@ -360,7 +389,7 @@ def compile_project(proj, final=False, write=True, engine_sync=True):
             rest = st
             for cs in sorted(claim_strs, key=len, reverse=True):
                 rest = rest.replace(cs, "")
-            for lit in literals:
+            for lit in sorted(literals, key=len, reverse=True):
                 rest = rest.replace(lit, "")
             if re.search(r"\d", rest):
                 unsourced.append("%s p.%s: %r" % (s["name"], _p(path), st))
@@ -484,8 +513,7 @@ def compile_project(proj, final=False, write=True, engine_sync=True):
                    "typing": typing, "ticks": ticks, "bell": bell,
                    "beats": _beats(bpm, cuts, dur)},
         "claims": claims, "claim_uses": uses, "custom_share": round(share, 4),
-        "scripts": ["../" + os.path.relpath(c["file"], proj).replace(os.sep, "/") for c in
-                    sorted({v["file"]: v for v in custom.values()}.values(), key=lambda c: c["file"])],
+        "scripts": ["../" + os.path.relpath(f, proj).replace(os.sep, "/") for f in scene_files(proj)],
         "engine": engine_hash, "warnings": warns, "errors": errs,
     }
     if write:

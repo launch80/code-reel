@@ -241,3 +241,39 @@ TRANS.slide = { self: false, dur: 0.5, draw(q, a, b, o) {  // incoming covers th
   ctx.drawImage(a, 0, 0); ctx.fillStyle = `rgba(0,0,0,${0.5 * q})`; ctx.fillRect(0, 0, VW, VH);
   ctx.save(); ctx.translate(dx * (q - 1) * VW, dy * (q - 1) * VH); ctx.drawImage(b, 0, 0); ctx.restore();
 } };
+
+// ================================================================ SHADER BACKGROUND (WebGL, optional)
+// BG.shader — a fragment shader painted into an offscreen WebGL canvas and drawn
+// as the background. Deterministic (time is a uniform). Falls back to BG.mesh if
+// WebGL is unavailable. bgOpts: {frag: "<glsl body using uv, t, acc, hot, bg>", scale}
+const _GL = { c: null, gl: null, prog: null, key: '' };
+const _FRAG_DEFAULT = `
+  float n(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
+  float vn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+    return mix(mix(n(i),n(i+vec2(1,0)),f.x), mix(n(i+vec2(0,1)),n(i+vec2(1,1)),f.x), f.y); }
+  vec3 shade(vec2 uv, float t){
+    float a = vn(uv*3.0 + vec2(t*0.08, -t*0.05)) * 0.6 + vn(uv*7.0 - vec2(t*0.11, t*0.07)) * 0.4;
+    float band = smoothstep(0.35, 0.9, a) * smoothstep(1.1, 0.2, uv.y + 0.2*sin(uv.x*3.0 + t*0.3));
+    vec3 c = mix(bg, acc, band * 0.55); c = mix(c, hot, pow(band, 3.0) * 0.35); return c; }`;
+function _glInit(frag) {
+  if (_GL.gl && _GL.key === frag && _GL.c.width === cv.width && _GL.c.height === cv.height) return _GL.gl;
+  const c = _GL.c || document.createElement('canvas'); c.width = cv.width; c.height = cv.height;
+  const gl = c.getContext('webgl', { preserveDrawingBuffer: true }); if (!gl) return null;
+  const vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+  const fs = 'precision highp float; uniform vec2 res; uniform float t; uniform vec3 acc, hot, bg;\n' + frag +
+    '\nvoid main(){ vec2 uv = gl_FragCoord.xy / res; uv.y = 1.0 - uv.y; gl_FragColor = vec4(shade(uv, t), 1.0); }';
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error('shader: ' + gl.getShaderInfoLog(s)); return s; };
+  const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  Object.assign(_GL, { c, gl, prog: pr, key: frag }); return gl;
+}
+BG.shader = (t, o = {}) => {
+  let gl = null; try { gl = _glInit(o.frag || _FRAG_DEFAULT); } catch (e) { if (!o.frag) throw e; throw new Error('bgOpts.frag: ' + e.message); }
+  if (!gl) return BG.mesh(t, o);
+  const u = n => gl.getUniformLocation(_GL.prog, n); const v3 = h => hx(h).map(x => x / 255);
+  gl.viewport(0, 0, _GL.c.width, _GL.c.height); gl.uniform2f(u('res'), _GL.c.width, _GL.c.height); gl.uniform1f(u('t'), t);
+  gl.uniform3fv(u('acc'), v3(C.accent)); gl.uniform3fv(u('hot'), v3(C.hot)); gl.uniform3fv(u('bg'), v3(C.bg));
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(_GL.c, 0, 0); ctx.restore();
+};

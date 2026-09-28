@@ -1,0 +1,13 @@
+{"version":2,"name":"GALLERY","w":1920,"h":1080,"fps":60,"seed":3,"style":"signal","hud":{"brand":"GALLERY"},
+"literals":["1","2","3","4","5","6","7","8","9","0","2019","2021","2023","2025","42","12","9","41","64","3.2","88"],
+"timeline":[
+{"scene":"statement","dur":3,"p":{"kicker":"a statement","text":"Small tools, sharp edges, and the patience to ship them.","emphasis":["sharp","ship"]}},
+{"scene":"code","dur":3,"p":{"file":"server.py","lines":["def handle(req):","    user = auth(req.token)","    if not user:","        return 401","    return render(user, cache=True)"],"add":[4],"del":[],"focus":4,"caption":"one line, four times faster"}},
+{"scene":"ui","dur":3,"p":{"app":"Inbox","nav":["Today","Upcoming","Done"],"title":"Today","items":[{"title":"Review the draft","meta":"due 10:00","badge":"NEW"},{"title":"Ship the build","meta":"due 14:00"},{"title":"Call the printer","meta":"due 16:30"}],"clicks":[{"item":1,"at":1.5}],"toast":"Marked done"}},
+{"scene":"steps","dur":3,"p":{"title":"how it works","steps":[{"label":"Write","sub":"a brief"},{"label":"Render","sub":"deterministic"},{"label":"Check","sub":"audit + QC"},{"label":"Ship","sub":"one file"}]}},
+{"scene":"milestones","dur":3,"p":{"title":"From a garage to a lab.","items":[{"when":"2019","label":"first prototype"},{"when":"2021","label":"open source"},{"when":"2023","label":"100 contributors"},{"when":"2025","label":"v1.0"}]}},
+{"scene":"logo","dur":3,"p":{"path":"M10 90 L50 10 L90 90 Z M30 60 L70 60","vb":[100,100],"word":"atlas","tagline":"maps for machines"}},
+{"scene":"ranking","dur":3,"p":{"title":"Fastest on the bench","items":[["Engine A",88],["Engine B",64],["Engine C",41],["Engine D",12]],"unit":"tok/s"}},
+{"scene":"route","dur":3,"p":{"title":"the delivery run","nodes":[{"label":"Depot","x":0.05,"y":0.6},{"label":"Market","x":0.3,"y":0.2},{"label":"Harbor","x":0.55,"y":0.75},{"label":"Station","x":0.8,"y":0.3},{"label":"Home","x":0.95,"y":0.8}],"edges":[[0,1],[1,2],[2,3],[3,4],[0,2],[1,3]],"path":[0,1,3,4]}},
+{"scene":"endcard","dur":2,"p":{"word1":"gal","word2":"lery","serif":"every blueprint","url":"example.com","footer":"test"}}
+]}

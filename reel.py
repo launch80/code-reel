@@ -15,6 +15,7 @@
   reel.py qc <proj>                            QC workbook                          -> .reel/qc_report.xlsx
   reel.py run <proj> [--draft|--final]         compile → audit → novelty → render → audio → build → qc
   reel.py direct <proj> <step> [--backend ...] model-driven steps (treat, pick, timeline, scenes) — see references/director.md
+  reel.py brand <proj> <url|file.html>         scrape palette, fonts, copy          -> brand.json
   reel.py status <proj>                        what has been built, what is stale
 
 Exit codes: 0 ok · 1 failed gate · 2 usage · 10 waiting for the agent backend (answer the prompt file, re-run).
@@ -50,8 +51,8 @@ def cmd_init(a):
     tl = {"version": 2, "name": a.name or os.path.basename(os.path.abspath(p)), "w": w, "h": h, "fps": 60,
           "seed": seed, "style": style, "hud": {"brand": a.name or "BRAND", "brand2": "", "series": "", "line": ""},
           "literals": [], "timeline": [
-              {"scene": "opening", "dur": 3.0, "name": "OPENING", "p": {"title": "Replace me"}},
-              {"scene": "endcard", "dur": 2.5, "name": "END", "p": {"word1": a.name or "brand", "word2": "", "serif": "", "url": "", "footer": ""}}]}
+              {"scene": "opening", "beats": 6, "name": "OPENING", "p": {"title": "Replace me"}},
+              {"scene": "endcard", "beats": 5, "name": "END", "p": {"word1": a.name or "brand", "word2": "", "serif": "", "url": "", "footer": ""}}]}
     json.dump(tl, open(os.path.join(p, "timeline.json"), "w"), indent=1)
     if not os.path.exists(os.path.join(p, "claims.json")):
         json.dump({"_doc": "every number shown on screen: {id: {value, display?, source, url?, how?, date?}} — reference as \"@id\" (value) or {{id}} (text)"},
@@ -153,6 +154,8 @@ def cmd_novelty(a):
 
 def cmd_review(a):
     rc = cmd_audit(a)
+    if rc and not os.path.exists(os.path.join(a.proj, ".reel", "audit.json")):
+        return rc
     from reelkit import render as R
     from reelkit import novelty as N
     _say("wrote", R.contact(a.proj, 1))
@@ -221,6 +224,15 @@ def cmd_run(a):
     return 0
 
 
+def cmd_brand(a):
+    from reelkit import brand as BR
+    b = BR.run(a.proj, a.src)
+    _say("brand.json: %s — %d colors, fonts seen: %s" % (b["title"] or b["source"], len(b["colors"]), ", ".join(f for f, _ in b["fonts"][:5]) or "-"))
+    _say("suggested style override (merge into timeline.json \"style\"):")
+    _say(json.dumps(b["suggested_style"], indent=1))
+    return 0
+
+
 def cmd_direct(a):
     from reelkit import director as D
     return D.main(a)
@@ -268,11 +280,12 @@ def main(argv=None):
         lambda s: s.add_argument("--dpr", type=int, default=2), lambda s: s.add_argument("--workers", type=int),
         lambda s: s.add_argument("--out"), lambda s: s.add_argument("--register", action="store_true"))
     add("status", cmd_status)
+    add("brand", cmd_brand, lambda s: s.add_argument("src", help="URL or saved .html file"))
     d = add("direct", cmd_direct, lambda s: s.add_argument("step", choices=["treat", "pick", "timeline", "scenes", "repair", "all"]))
     for flag, kw in (("--backend", dict(default=os.environ.get("REEL_BACKEND", "agent"))), ("--model", dict(default=os.environ.get("REEL_MODEL", "qwen3:14b"))),
                      ("--base-url", dict(default=os.environ.get("LLM_BASE_URL", "http://localhost:11434"))),
                      ("--fixtures", dict(default=os.environ.get("REEL_FIXTURES"))), ("--candidates", dict(type=int, default=3)),
-                     ("--pick", dict(default=None)), ("--temperature", dict(type=float, default=None)), ("--max-repair", dict(type=int, default=2))):
+                     ("--pick", dict(default=None)), ("--only", dict(default=None)), ("--temperature", dict(type=float, default=None)), ("--max-repair", dict(type=int, default=2))):
         d.add_argument(flag, **kw)
     a = ap.parse_args(argv)
     try:

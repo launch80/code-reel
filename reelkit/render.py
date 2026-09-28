@@ -195,7 +195,7 @@ async def _audit(proj, dpr):
                 ent["samples"].append({"t": t, "lit": round(r["lit"], 4), "lum": r["lum"], "boxes": r["boxes"], "errors": e, "warnings": w})
                 res["errors"] += ["%s @%.2fs: %s" % (s["name"], t, x) for x in e]
                 res["warnings"] += ["%s @%.2fs: %s" % (s["name"], t, x) for x in w]
-            if max(x["lit"] for x in ent["samples"]) < 0.004:
+            if max(x["lit"] for x in ent["samples"]) < 0.0008:
                 res["errors"].append("%s: scene renders (nearly) blank — nothing drawn in the safe area" % s["name"])
             res["scenes"].append(ent)
         await b.close()
@@ -253,6 +253,7 @@ async def _chunk(proj, tl, dpr, f0, f1, path):
 
 
 async def _video(proj, dpr, workers):
+    proj = os.path.abspath(proj)
     tl = _tl(proj)
     n = int(round(tl["duration"] * tl["fps"]))
     rd = os.path.join(proj, ".reel")

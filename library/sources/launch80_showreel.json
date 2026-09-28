@@ -1,0 +1,328 @@
+{
+ "name": "LAUNCH80 SHOWREEL",
+ "w": 1920,
+ "h": 1080,
+ "fps": 60,
+ "bpm": 120,
+ "hud": {
+  "brand": "LAUNCH",
+  "brand2": "80",
+  "series": "SHOWREEL_2026",
+  "line": "LOCAL AI, DIALED IN"
+ },
+ "timeline": [
+  {
+   "scene": "terminal",
+   "dur": 1.5,
+   "name": "BOOT",
+   "p": {
+    "prompt": "launch80:~$",
+    "cmd": "./showreel --local --since may-2026",
+    "title": "zsh \u2014 1920\u00d71080",
+    "rows": [
+     [
+      "llama.cpp",
+      "mtp \u00b7 nvfp4 \u00b7 metal fusion"
+     ],
+     [
+      "kv-cache",
+      "3-bit \u00b7 5.2\u00d7 smaller"
+     ],
+     [
+      "weights",
+      "qwen3.8-27b \u00b7 apache-2.0"
+     ],
+     [
+      "community",
+      "launch80 \u00b7 2,000 strong"
+     ]
+    ],
+    "progress": {
+     "label": "rendering",
+     "pct": 100
+    }
+   }
+  },
+  {
+   "scene": "kinetic",
+   "dur": 2.5,
+   "name": "KINETIC",
+   "p": {
+    "intro": "in a few short months, local ai got",
+    "words": [
+     [
+      "FASTER.",
+      0.5,
+      "",
+      "multi-token prediction",
+      "1.7\u00d7"
+     ],
+     [
+      "LEANER.",
+      1.0,
+      "",
+      "3-bit kv cache",
+      "5.2\u00d7 smaller"
+     ],
+     [
+      "SMARTER.",
+      1.5,
+      "ACCENT",
+      "27B open weights",
+      "262K ctx"
+     ]
+    ]
+   }
+  },
+  {
+   "scene": "cards",
+   "dur": 3.0,
+   "name": "THE STACK",
+   "p": {
+    "header": "// THE OPEN-SOURCE STACK \u00b7 MAY \u2192 SEP 2026",
+    "kicker": "Rewritten in a single season.",
+    "cards": [
+     {
+      "tag": "LLAMA.CPP \u00b7 MTP",
+      "big": {
+       "from": 38,
+       "to": 65,
+       "fmt": "int"
+      },
+      "unit": "tok/s",
+      "sub": "from 38 on one RTX 3090",
+      "label": "multi-token prediction, no draft model",
+      "viz": "bars"
+     },
+     {
+      "tag": "KV CACHE \u00b7 TURBOQUANT",
+      "big": {
+       "from": 1,
+       "to": 5.2,
+       "fmt": "x"
+      },
+      "unit": "smaller",
+      "sub": "3-bit keys & values, ~f16 quality",
+      "label": "long context stops eating your VRAM",
+      "viz": "kv"
+     },
+     {
+      "tag": "QWEN3.8-27B \u00b7 APACHE-2.0",
+      "big": {
+       "from": 0,
+       "to": 262,
+       "fmt": "k"
+      },
+      "unit": "context",
+      "sub": "dense 27B, 4-bit fits in 24 GB",
+      "label": "near-frontier weights you can own",
+      "viz": "ctx"
+     }
+    ],
+    "ticker": {
+     "label": "COMMITS",
+     "items": [
+      "+ NVFP4 MMQ pipelined for Blackwell",
+      "+ Metal gated-delta-net fusion",
+      "+ Hexagon multi-NPU row split",
+      "+ OpenVINO MoE expert fusion",
+      "+ llama-server multi-address bind",
+      "+ --spec-type draft-mtp",
+      "+ Qwen3.8 \u00b7 Gemma 4 \u00b7 DeepSeek V4 support"
+     ]
+    }
+   }
+  },
+  {
+   "scene": "counter",
+   "dur": 3.0,
+   "name": "FROM THE LAB",
+   "p": {
+    "prompt": "~/launch80 $",
+    "promptArg": "[#dev-announcements]",
+    "kicker": "from the lab \u2014",
+    "big": {
+     "from": 0,
+     "to": 470,
+     "fmt": "int"
+    },
+    "unit": "tok/s",
+    "sub": "AGGREGATE",
+    "tagline": "ONE R9700  \u00b7  TP=1  \u00b7  ~220K CONTEXT",
+    "typing": "[#r9700] Qwen3.8-Flash-Next expert offload \u2192 two flags on a 64 GB box",
+    "scope": [
+     -0.0124,
+     0.019,
+     0.0538,
+     0.0098,
+     -0.0247,
+     -0.0673,
+     -0.0342,
+     -0.0092,
+     0.0695,
+     0.0867,
+     0.0542,
+     -0.0043,
+     -0.0206,
+     0.0042,
+     0.0338,
+     0.0502,
+     0.0641,
+     0.0796,
+     0.0385,
+     0.0148,
+     0.0133,
+     0.0388,
+     0.0995,
+     0.0965,
+     0.1059,
+     0.0608,
+     0.007,
+     0.0576,
+     0.0845,
+     0.1068,
+     0.1164,
+     0.1176,
+     0.094,
+     0.0755,
+     0.0856,
+     0.1166,
+     0.1697,
+     0.1868,
+     0.1631,
+     0.1259,
+     0.1215,
+     0.1141,
+     0.1434,
+     0.1912,
+     0.2154,
+     0.175,
+     0.1702,
+     0.1447,
+     0.1762,
+     0.2031,
+     0.2378,
+     0.2518,
+     0.2149,
+     0.1916,
+     0.1788,
+     0.2285,
+     0.2806,
+     0.2859,
+     0.3309,
+     0.2922,
+     0.2443,
+     0.2288,
+     0.2429,
+     0.3347,
+     0.3345,
+     0.3862,
+     0.3562,
+     0.3026,
+     0.3032,
+     0.3076,
+     0.3481,
+     0.4113,
+     0.4023,
+     0.3844,
+     0.3681,
+     0.3606,
+     0.376,
+     0.4126,
+     0.4572,
+     0.4909,
+     0.4761,
+     0.4391,
+     0.4221,
+     0.4561,
+     0.4855,
+     0.5168,
+     0.5255,
+     0.522,
+     0.4944,
+     0.5013,
+     0.5012,
+     0.5692,
+     0.5971,
+     0.5877,
+     0.565,
+     0.5699,
+     0.5687,
+     0.5889,
+     0.6098,
+     0.6645,
+     0.6688,
+     0.6549,
+     0.6404,
+     0.6364,
+     0.6308,
+     0.6898,
+     0.7442,
+     0.74,
+     0.7227,
+     0.6718,
+     0.697,
+     0.7142,
+     0.7732,
+     0.8058,
+     0.8316,
+     0.8127,
+     0.7745,
+     0.7715,
+     0.7852,
+     0.8468,
+     0.8923
+    ]
+   }
+  },
+  {
+   "scene": "chart",
+   "dur": 2.5,
+   "name": "THE COMMUNITY",
+   "p": {
+    "line": "and the people running it found each other.",
+    "grow": [
+     0,
+     160,
+     430,
+     780,
+     1120,
+     1440,
+     1760,
+     2000
+    ],
+    "max": 2000,
+    "months": [
+     "FEB",
+     "MAR",
+     "APR",
+     "MAY",
+     "JUN",
+     "JUL",
+     "AUG",
+     "SEP"
+    ],
+    "label": "MEMBERS",
+    "sub": "LAUNCH80 DISCORD \u00b7 EST. FEB 2026",
+    "impact": 1.8,
+    "seed": 1
+   }
+  },
+  {
+   "scene": "endcard",
+   "dur": 2.5,
+   "name": "LAUNCH80",
+   "p": {
+    "tag": "R&D LAB  //  LOCAL AI  //  COMMUNITY  //  BUILD WHAT\u2019S NEXT",
+    "word1": "launch",
+    "word2": "80",
+    "serif": "local ai, dialed in.",
+    "url": "launch80.com",
+    "footer": "SHOWREEL \u00b7 MOTION + CODE \u00b7 2026"
+   }
+  }
+ ],
+ "version": 2,
+ "seed": 7,
+ "style": "signal"
+}

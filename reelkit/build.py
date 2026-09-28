@@ -41,15 +41,19 @@ def encode(proj, out=None, w=None, h=None, crf=17, target=-14.0):
                  "setparams=colorspace=bt709:color_primaries=bt709:color_trc=bt709:range=tv" % (w, h),
           "-c:v", "libx264", "-preset", "slow", "-crf", str(crf), "-profile:v", "high", "-g", str(int(tl["fps"]) * 2),
           "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv", "-an", vtmp])
-    gain = target - measure(wav)["I"]
+    tgt, tp = target, -1.6
     got = None
     for attempt in range(4):
+        # loudnorm (dynamic) has a true-peak limiter; short files land a little off target,
+        # so we measure the ENCODED output and nudge the target until it is inside the gate.
         _run(["ffmpeg", "-y", "-loglevel", "error", "-i", vtmp, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
-              "-af", "volume=%.2fdB,alimiter=limit=0.83:level=false:attack=2:release=40" % gain,
+              "-af", "acompressor=threshold=-21dB:ratio=3.5:attack=4:release=140:knee=4,loudnorm=I=%.2f:TP=%.2f:LRA=9,aresample=48000" % (tgt, tp),
               "-ar", "48000", "-ac", "2", "-c:a", "aac", "-b:a", "256k", "-movflags", "+faststart", "-shortest", out])
         got = measure(out)
         if abs(got["I"] - target) <= 0.6 and got["TP"] <= -1.0:
             break
-        gain += (target - got["I"]) * 0.9
+        tgt = max(-24.0, min(-9.0, tgt + (target - got["I"]) * 0.9))
+        if got["TP"] > -1.0:
+            tp = max(-6.0, tp - (got["TP"] + 1.0) - 0.4)       # AAC adds inter-sample overshoot: aim lower
     os.remove(vtmp)
     return out, got

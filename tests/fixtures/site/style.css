@@ -1,0 +1,3 @@
+:root{--bg-deep:#0d1116;--bg-canvas:#161d27;--text:#ebe7e4;--muted:#9fa4ab;--accent:#6a9fcc;--accent-rust:#8f3222}
+body{background:#0d1116;color:#ebe7e4;font-family:"DM Mono",monospace} h1{font-family:'Instrument Serif',serif;color:#ebe7e4} a{color:#6a9fcc}
+.card{background:#161d27;border:1px solid #2a333d}.x{color:#9fa4ab}

@@ -18,3 +18,18 @@
 - **QC** reads the compiled timeline + audit + novelty; tech specs measured, human checks pre-filled with timecodes.
 - **Novelty** check: per-scene layout + edge fingerprints vs a library of past reels / blueprints; flags re-skins (the pi reel scores 56% re-skinned vs the Launch80 reel).
 - **Tests** (`tests/`, pytest) drive the CLI exactly as an agent would: compile contracts, claims, seed variation, audio determinism + sync, per-style rendering, audit catches (overlap / off-canvas / blank / JS error), vertical layouts, end-to-end run.
+
+## Stage B — transitions, illustration, scenes, sound
+- **Transitions** composited from two full frames (bg + camera + scene): dissolve, push, whip, wipe, zoom, iris (with a focal point), shutter, slide; plus cut/glitch/flash. Each gets its own sound (whoosh, swell, riser+impact, click).
+- **Illustration toolkit** in use: `examples/penguin` — a penguin rides a bicycle down Main Street (IK legs follow the pedals, scarf in the wind, blinking, head turns to each ad), four storefronts with window displays, parallax sky/hills/rooftops/street/bollards, a tracking camera, and a pop-out ad springing from each store's sign as he passes. World clock (`T_ABS`) keeps cuts continuous.
+- **WebGL shader background** (`bg: "shader"`, custom GLSL via `bgOpts.frag`), falls back to 2D.
+- **Worked examples for the director** (`prompts/examples/`): data as a filling GPU, kinetic type as crane-stacked crates, a courier journey — rotated by seed.
+- **Accuracy**: on-screen numbers hard-coded in scene JS are flagged; claims marked placeholder are refused in `--final`; closed-loop loudness now handles true peak (compress → loudnorm → measure the MP4 → adjust).
+
+## Stage C — director, gates, docs
+- **Director** (`reel.py direct`): treat (K treatments; seed assigns each a different style pack + structure; gate rejects shared packs/metaphors), style frames sheet, pick, timeline (compile-gated with stubs), scenes (one file per scene: syntax → compile → audit → novelty, repair rounds carry the report; review strip per scene).
+- **One model interface, four backends**: agent (prompt/answer files, exit 10, resumable), ollama, openai-compatible, mock (replays any recorded `.reel/llm/`). Prompts and gates identical; every exchange recorded.
+- **Recorded agent session** `tests/fixtures/pi_small_core` + `examples/pi-small-core` (full transcript): the pi reel redone as a Swiss "small core" story — novelty 0% re-skinned vs the old pi reel's 64%.
+- **brand** step: palette/fonts/copy from a site or saved HTML → brand.json + suggested override.
+- **Novelty library** built from blueprints in 4 styles + the Launch80 and old pi reels (`tools/build_library.py`); `run --final --register` adds new reels.
+- Docs rewritten around the one flow: SKILL.md, README, references (interview, api, scenes, styles, claims, director, critique, qc). Legacy `templates/` removed.

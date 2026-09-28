@@ -108,11 +108,16 @@ const cyc = {
 // ------------------------------------------------------------------ props
 // bicycle at (x, y) = rear-wheel contact point on the ground; returns rig points.
 // o: {s (scale), rot (wheel angle, rad), crank (crank angle), frame, tire, dir (+1 faces right)}
-function bicycle(x, y, o = {}) {
-  const s = o.s || 1, R = 52 * s, dir = o.dir || 1; const frame = o.frame || C.accent, tire = o.tire || '#1d1d1f';
+function bikeRig(x, y, o = {}) {   // geometry only (plan limbs before drawing); bicycle() draws it
+  const s = o.s || 1, R = 52 * s, dir = o.dir || 1;
   const rear = [x, y - R], front = [x + dir * 170 * s, y - R], crank = [x + dir * 72 * s, y - R + 6 * s];
   const seat = [x + dir * 52 * s, y - R - 96 * s], bar = [x + dir * 150 * s, y - R - 104 * s], head = [x + dir * 138 * s, y - R - 70 * s];
   const ca = o.crank || 0, cr = 20 * s; const p1 = [crank[0] + Math.cos(ca) * cr, crank[1] + Math.sin(ca) * cr], p2 = [crank[0] - Math.cos(ca) * cr, crank[1] - Math.sin(ca) * cr];
+  return { rear, front, crank, seat, bar, head, pedals: [p1, p2], R, s, dir };
+}
+function bicycle(x, y, o = {}) {
+  const { rear, front, crank, seat, bar, head, pedals: [p1, p2], R, s, dir } = bikeRig(x, y, o);
+  const frame = o.frame || C.accent, tire = o.tire || '#1d1d1f';
   const wheel = (cx, cy) => { ctx.save(); circle(cx, cy, R, { stroke: tire, sw: 9 * s }); circle(cx, cy, R - 7 * s, { stroke: rgba('#888888', 0.6), sw: 1.5 * s });
     for (let k = 0; k < 8; k++) { const a = (o.rot || 0) + k * Math.PI / 4; line(cx, cy, cx + Math.cos(a) * (R - 6 * s), cy + Math.sin(a) * (R - 6 * s), { col: rgba('#9aa0a6', 0.8), sw: 1.4 * s }); }
     circle(cx, cy, 5 * s, { fill: '#888' }); ctx.restore(); };
