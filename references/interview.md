@@ -73,14 +73,17 @@ watch it and what should they do after? Nothing else goes in this reel.
    QC Fact Check tab
 
 **5. Who writes the story?**
-   a. **Director** — a local model invents the timeline from your one-liner
+   a. **Director + bespoke scenes** (default) — a local model invents the
+       timeline AND writes new scene types made for this video, then every
+       bespoke scene is render-probed before anything is final
        (needs a local model; you review stills before anything is final)
    b. **I write it** — the agent composes `timeline.json` from your answers
        (recommended if no local model is configured)
    c. **Fill-in-the-blank** — you hand me the filled `blank.json`
-   d. **New scene types** — we design them together in `scene_custom.js`
-       (blueprint mode, see `references/blueprints.md`)
-   → `director.py --mode invent` vs direct authoring vs blank.json vs
+   d. **Blueprint, together** — we design the new scene types with you in
+       `scene_custom.js` (see `references/blueprints.md`)
+   → `director.py --mode invent` (default `--bespoke 2`; `--bespoke 0` =
+   archetypes only, a draft) vs direct authoring vs blank.json vs manual
    `--allow-custom`
 
 **6. Look?** Default is the house style: near-black background `#0b0b0c`,

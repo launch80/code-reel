@@ -16,9 +16,11 @@ soundtrack from the same timeline that drives the animation.
 and data stories — kinetic type, terminals, stat cards, counters, charts,
 quotes, splits, endcards — plus a deterministic cinematic post layer (ACES tone
 mapping, shutter motion blur, bloom, grain, lens treatment) and an optional
-local-LLM *director* that turns a written brief into a validated `spec.json`.
-Every pixel comes from deterministic renderer code; the LLM never touches
-pixels, only the spec.
+local-LLM *director* that turns a written brief into a validated `spec.json`
+**plus bespoke `scene_custom.js` drawing code written for that video** — so no
+two videos are built from the same scene set. Every pixel comes from
+deterministic renderer code; the LLM never touches pixels, only the spec and
+the scene code that gets rendered deterministically.
 
 **Isn't**: a general video generator. No illustration, no footage, no video
 models, no photoreal humans — "a penguin riding a bicycle through town" is out
@@ -47,16 +49,19 @@ Set up the code-reel skill and make me a video:
 2. Environment: cd ~/.agents/skills/code-reel/templates, create a venv, run
    pip install -r requirements.txt, python -m playwright install chromium,
    and make sure ffmpeg is on PATH (brew install ffmpeg if missing).
-3. Build a 15s reel with the code-reel skill using this content:
+3. Build a 15s reel with the code-reel skill. Use the director (mode 1) so
+   the model writes bespoke scenes for THIS video — do not just reuse the 8
+   shipped archetypes (that is a draft, not a final). Content:
    - Topic: local AI vs frontier/cloud AI — local wins on privacy, cost, control
    - Stats to feature: $312/yr frontier API vs $0 local; 100% of prompts local;
      300h+ frontier downtime per year; 2,000 community members
    - Kinetic words: PRIVATE. (0 uploads) / FREE. ($0/mo) / YOURS. (pinned forever)
    - End card: launch80 · "local ai, dialed in." · launch80.com
-   Keep the template's 6-scene structure, cut times, and audio sync; only
-   rewrite the content. Run validate.py first, then render PNG stills at DPR=1
-   for a collision/overflow check, fix anything that looks wrong, then run the
-   full DPR=2 build and hand me the final MP4.
+   Run `python3 director.py --mode invent --brief brief.md --model <local>`
+   (it writes `scene_custom.js` with new scenes + the timeline, validates with
+   `--allow-custom`, and render-probes every new scene). Then render PNG stills
+   at DPR=1 for a collision/overflow check, fix anything that looks wrong, run
+   the full DPR=2 build and `qc.py`, and hand me the final MP4.
 ```
 
 The agent will interview you — one question at a time, each with a default,
@@ -69,7 +74,7 @@ file you touch), render stills for review, then `./build.sh` → `reel.mp4` →
 
 | | Mode | Who writes the scenes | You do |
 |---|---|---|---|
-| **1** | **Director** | the **director LLM** — a local model (Ollama / vLLM / LM Studio / MLX) invents a `timeline.json` from your brief using the 8 shipped archetypes | paste a brief, review stills, approve |
+| **1** | **Director** | the **director LLM** — a local model (Ollama / vLLM / LM Studio / MLX) writes **bespoke scenes for this video** in `scene_custom.js` and composes a `timeline.json` from your brief (default `--bespoke 2`; the 8 shipped archetypes are the fallback, `--bespoke 0`) | paste a brief, review stills, approve |
 | **2** | **Blueprints** | you + a local LLM, in `scene_custom.js` — new scene types as JS functions that *reference the skill's own blueprint code* (`REG` in `reel.html`) so the style stays consistent | ask your agent: “read `references/blueprints.md` + the REG in `reel.html`, write a new scene in `scene_custom.js`” |
 | **3** | **Fill-in** | nobody — you fill the `<SLOT>`s in `templates/blank.json` | 30 seconds of typing; `validate.py` refuses to render while slots are unfilled |
 

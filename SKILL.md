@@ -13,11 +13,13 @@ Build a short motion-graphics video with no video editor: one HTML file draws ev
 
 | Mode | Who writes the content | Who writes scene code | How |
 |---|---|---|---|
-| **1 · Director** | an LLM composes the whole timeline from a written brief | nobody — the 8 shipped archetypes only | `python3 director.py --mode invent --brief brief.md --model <local-model>` |
+| **1 · Director** | an LLM composes the whole timeline from a written brief | **the LLM writes NEW bespoke scenes for this video** (`--bespoke N`, default 2; `--bespoke 0` = archetypes only) | `python3 director.py --mode invent --brief brief.md --model <local-model>` |
 | **2 · Blueprint** | you + a local LLM, iterating in an agent session | the LLM writes NEW scene types in `scene_custom.js` | read `references/blueprints.md`; the LLM adds `defineScene('name', fn)` — never fork `reel.html` |
 | **3 · Fill-in-blank** | you (or the director pre-fills) | nobody | copy `templates/blank.json`, fill every `<SLOT>`, validate |
 
-All three converge on the same frozen `timeline.json` and the same deterministic pipeline (`validate.py` → `render.py` → `audio.py` → `build.sh` → `qc.py`). The LLM never produces pixels — it produces JSON; timing lives only in the frozen file. Mode 1/3 output is byte-reproducible; mode 2 adds a `scene_custom.js` beside the project files (validate with `--allow-custom`).
+All three converge on the same frozen `timeline.json` and the same deterministic pipeline (`validate.py` → `render.py` → `audio.py` → `build.sh` → `qc.py`). The LLM never produces pixels — it produces JSON + `scene_custom.js`; timing lives only in the frozen file. Mode 1/3 output is byte-reproducible; mode 2 adds a `scene_custom.js` beside the project files (validate with `--allow-custom`).
+
+**Uniqueness rule: the 8 archetypes are the skeleton, not the look.** Every final reel contains at least one `defineScene` written for that video — in mode 1 the director generates them automatically (`--bespoke 2`): the LLM writes the JS, it is syntax-gated with `node --check`, the timeline is validated with `--allow-custom`, and every bespoke scene is **render-probed** (two DPR=1 stills must contain real pixels in the safe area, or the JS is repaired and re-probed). Archetypes-only output is a draft, never a final delivery.
 
 ```
 brief ──► director.py ──► timeline.json (+_meta.json) ──► validate.py ──► render.py ──► audio.py ──► build.sh ──► qc.py
@@ -26,7 +28,7 @@ brief ──► director.py ──► timeline.json (+_meta.json) ──► vali
 
 ## 1. Interview first (always — before any file is written)
 
-**Open every invocation with an interactive interview.** Read `references/interview.md` and run it: one question per message, conversational — never a form dump. Cover the knobs that drive the pipeline — topic, platform/aspect, duration, on-screen claims + sources, who writes the story (director / agent / fill-in / blueprint), look (palette/HUD/grain/audio), and render plan (draft→approve→final vs straight-to-final). Follow up briefly when an answer opens a door ("match our brand" → *which site?*); skip questions the request already answered; take defaults when the user is stuck or says "just do it". Close by echoing the decision table and what happens next.
+**Open every invocation with an interactive interview.** Read `references/interview.md` and run it: one question per message, conversational — never a form dump. Cover the knobs that drive the pipeline — topic, platform/aspect, duration, on-screen claims + sources, who writes the story (director-with-bespoke-scenes / blueprint / fill-in), look (palette/HUD/grain/audio), and render plan (draft→approve→final vs straight-to-final). Follow up briefly when an answer opens a door ("match our brand" → *which site?*); skip questions the request already answered; take defaults when the user is stuck or says "just do it". Close by echoing the decision table and what happens next.
 
 - **One question per message, then wait.** Only ask about gaps — if the request already contains `key=value` pairs or prose that answers a question, acknowledge in one line and move on. Follow-ups are allowed but stay short (one question). If the user says "just do it"/"surprise me"/"stop asking" at any point, fill the rest with defaults, echo the table, and proceed without waiting.
 - **Never ask what doesn't change a file** — the score is derived, so there is no music question; aspect changes `OUT_W/OUT_H`; DPR changes wall-clock time; claims feed the QC fact-check.
@@ -66,6 +68,21 @@ One-time machine setup (check first; skip if already installed): `pip install -r
 ## 3. Compose the timeline (no drawing code)
 
 Open `references/scenes.md` in this skill directory — it is the contract for every scene type and its `p` params. The reel is defined ENTIRELY in `timeline.json`: scenes, durations, content, theme, HUD. `reel.html` derives `CUTS`/`SC`/`IMPACTS`/dispatch from it; `audio.py` derives the whole score (beats, risers, slams, typing clicks, ticks, bell) from the same file. Nothing else needs editing for a normal reel.
+
+```bash
+# mode 1 — the LLM writes bespoke scenes for THIS video (default --bespoke 2),
+# composes the timeline, and the result is render-probed before it freezes
+python3 director.py --mode invent --brief brief.md --model <local-model>
+# (--bespoke 0 = archetypes only — a draft, never a final delivery)
+
+# mode 3 — fill-in-the-blank
+python3 director.py --mode fill --template blank.json --brief brief.md --model <local-model>
+
+# any authored timeline goes through the same gate
+python3 director.py --mode from-file my_idea.json --out timeline.json   # or: python3 validate.py timeline.json
+```
+
+The director's output is frozen `timeline.json` + `timeline_meta.json` (model, seed, prompt hash, repair flag, bespoke scene names + JS hash, probe report) — re-runs of the renderer are byte-stable because timing lives only in the frozen file.
 
 Core rules:
 

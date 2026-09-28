@@ -19,24 +19,25 @@ CRF="${CRF:-17}"
 # Lanczos, convert to limited-range yuv420p, and TAG the stream via setparams
 # (the -colorspace/-color_trc/-color_primaries CLI flags alone leave primaries/
 # transfer untagged in recent ffmpeg — players then guess BT.601 and colors shift).
-# Audio: gentle compression + two-pass loudnorm to -14 LUFS / -1.5 dBTP, then a
-# +1.5 dB trim into a limiter (qc.py measures -14.6 LUFS / -1.5 dBTP through
-# this chain — plain loudnorm alone can't reach the target on short files).
+# Audio: gentle compression + two-pass loudnorm. Target is -13 LUFS because the
+# two-pass linear chain lands ~1.7 LU low on short files (measured -15.0/-15.1
+# when targeting -14), and a +1.5 dB trim after loudnorm overshoots to -12.8.
+# Target -13 measures -14.7 LUFS on the 15 s reel — inside the -14±1 gate.
+# Do not add a post-loudnorm gain trim.
 # 48 kHz stereo AAC 256k, faststart for streaming.
-LN="acompressor=threshold=-18dB:ratio=4:attack=5:release=250,loudnorm=I=-14:TP=-1.5:LRA=11,volume=1.5dB,alimiter=limit=0.84"  # fallback
+LN="acompressor=threshold=-18dB:ratio=4:attack=5:release=250,loudnorm=I=-13:TP=-1.5:LRA=11"  # fallback
 M=$("$PY" - <<'PY' 2>/dev/null
 import json, re, subprocess
 p = subprocess.run(["ffmpeg", "-hide_banner", "-i", "audio.wav", "-af",
-                    "acompressor=threshold=-18dB:ratio=4:attack=5:release=250,loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                    "acompressor=threshold=-18dB:ratio=4:attack=5:release=250,loudnorm=I=-13:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
                    capture_output=True, text=True)
 m = re.search(r"\{[^{}]*\"input_i\"[^{}]*\}", p.stderr, re.S)
 if not m:
     raise SystemExit
 d = json.loads(m.group(0))
 print("acompressor=threshold=-18dB:ratio=4:attack=5:release=250,"
-      "loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=%s:measured_TP=%s:measured_LRA=%s"
-      ":measured_thresh=%s:offset=%s:linear=true,"
-      "volume=1.5dB,alimiter=limit=0.84" %
+      "loudnorm=I=-13:TP=-1.5:LRA=11:measured_I=%s:measured_TP=%s:measured_LRA=%s"
+      ":measured_thresh=%s:offset=%s:linear=true" %
       (d["input_i"], d["input_tp"], d["input_lra"], d["input_thresh"], d["target_offset"]))
 PY
 )

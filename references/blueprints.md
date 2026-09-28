@@ -9,10 +9,11 @@ it produces one file:
 <project>/scene_custom.js      ← defineScene('name', (lt, d, p) => {...})
 ```
 
-`reel.html` fetches it before building the timeline (silent 404 = no custom
-scenes) and it runs **in reel.html's script scope**, so every helper below is
-in scope. Reference `templates/reel.html` — the eight `REG.*` functions are
-the blueprints; copy their patterns.
+`reel.html` loads it via a `<script>` tag before building the timeline (a missing
+file is fine — no custom scenes; `fetch()` deliberately does not work here, and
+`file://` fetches are CORS-blocked anyway) and it runs **in reel.html's script
+scope**, so every helper below is in scope. Reference `templates/reel.html` —
+the eight `REG.*` functions are the blueprints; copy their patterns.
 
 ## Contract
 
@@ -63,6 +64,50 @@ defineScene('orbit', (lt, d, p) => {
 | `bigFmt` + `p.big` | counters: `const v=lerp(bf.from,bf.to,eOutExpo(prog(lt,0.1,1.4)))` |
 
 ## Recommended workflow (agent + local LLM)
+
+### The uniqueness recipe
+
+Past reels looked alike because agents picked compositions from the eight
+archetypes instead of drawing the video's own subject. When writing a bespoke
+scene, mine the **brief** for the picture:
+
+1. **List the brief's concrete nouns** (ports, cranes, containers, ships —
+   not "logistics"; satellites, debris, radar — not "space").
+2. **Pick the relationship to draw**: orbiting, stacking, routing, queueing,
+   filling, splitting, counting down, crossing a threshold. That relationship
+   is the animation.
+3. **One hero moment per scene**: one big shape + 2–4 annotated details beats
+   a dense dashboard. The post layer (grain, flash, vignette) adds the rest.
+4. **Never re-implement an archetype** with different colors — if the result
+   is "three cards with numbers", it is `cards`, delete it and go deeper into
+   the brief.
+
+## Director auto-generation (mode 1, `--bespoke N`)
+
+`director.py --mode invent` runs the blueprint path by default: the LLM first
+writes `scene_custom.js` with `N` new scene types (default 2), then composes a
+timeline that must use all of them. Every gate the manual path has, the
+automatic path has too:
+
+1. **Syntax gate** — `node --check scene_custom.js`; failures are sent back to
+   the model for one self-repair round.
+2. **Validation gate** — the timeline is validated with `--allow-custom`, so a
+   bespoke scene type must be *declared* in the JS and *used* by the timeline;
+   JSON repair rounds as usual.
+3. **Render probe** — each bespoke scene is rendered (DPR=1, `render.py stills`)
+   at 35% and 75% of its duration; the safe-area crop must contain ≥120 lit
+   pixels (luma > 80) per sample pair. A real scene draws ~6,000+ lit pixels;
+   a blank/crashed scene draws 0. On failure the JS is sent back to the model
+   with the probe report and re-probed; second failure ⇒ `director.py` exits 2
+   and keeps the candidates for a human.
+4. **Frozen metadata** — `timeline_meta.json` records the bespoke scene names,
+   the JS sha256, and the probe report, so every video is auditable.
+
+The probe is also available for the manual path: `director.py --mode from-file
+timeline.json --allow-custom` probes any custom scene next to the timeline.
+(`--bespoke 0` / `--no-probe` skip the respective stages — drafts only.)
+
+## Manual workflow (agent + local LLM)
 
 1. Scaffold the project (SKILL.md §2), copy `templates/blank.json` →
    `timeline.json`, and keep the shipped 8 scenes for v1.
