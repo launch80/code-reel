@@ -9,3 +9,7 @@ __pycache__/
 .reel/
 *.pyc
 .pytest_cache/
+
+# local project scratch directories (render outputs stay out of the repo)
+/bonsai2-prismml/
+/reel-pi/

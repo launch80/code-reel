@@ -207,7 +207,8 @@ def build(tl, out_path):
     dur = tl["duration"]
     au = tl.get("audio") or {}
     preset = au.get("preset") or tl["style"].get("audio", "pulse")
-    P = PRESETS.get(preset, PRESETS["pulse"])
+    P = dict(PRESETS.get(preset, PRESETS["pulse"]))
+    P.update(au.get("params") or {})   # per-project overrides, e.g. {"crackle": false}
     m = Mix(dur, tl.get("seed", 1))
     bpm = tl["bpm"]
     beat = 60.0 / bpm
