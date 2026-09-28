@@ -6,3 +6,6 @@ stills/
 .venv/
 __pycache__/
 .DS_Store
+.reel/
+*.pyc
+.pytest_cache/

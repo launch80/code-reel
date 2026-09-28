@@ -1,0 +1,353 @@
+{
+ "_doc": "Style packs. A timeline picks one with \"style\": \"<pack>\" or {\"pack\": \"<pack>\", ...overrides}. Every key can be overridden per timeline; bg/camera per scene via scene.look. transitions = pool the variation seed draws from for cuts without an explicit transition. bpm must divide 3600 (beat = whole frames at 60fps): 90, 100, 120, 144, 150, 180.",
+ "signal": {
+  "desc": "dark tech launch: perspective grid, camera HUD, film grain, glitch cuts, punchy pulse score",
+  "palette": {
+   "bg": "#0b0b0c",
+   "surf": "#151517",
+   "line": "#2a2a2d",
+   "text": "#ececec",
+   "mute": "#9b9b9b",
+   "accent": "#e85d04",
+   "hot": "#ff8a3d",
+   "cream": "#faf9f7"
+  },
+  "fonts": {
+   "sans": "DM Sans",
+   "mono": "DM Mono",
+   "serif": "Instrument Serif",
+   "disp": "Russo One"
+  },
+  "weights": {
+   "sans": 400,
+   "sansBold": 800,
+   "mono": 400,
+   "monoBold": 500,
+   "serif": 400,
+   "disp": 400
+  },
+  "bg": "grid",
+  "hud": "camera",
+  "post": "film",
+  "camera": "push",
+  "transitions": [
+   "glitch",
+   "glitch",
+   "flash",
+   "whip"
+  ],
+  "transitionDur": 0.35,
+  "motion": {
+   "in": "outExpo",
+   "out": "in",
+   "move": "inOut"
+  },
+  "glow": 1,
+  "flash": 1,
+  "radius": 12,
+  "caps": true,
+  "audio": "pulse",
+  "bpm": 120
+ },
+ "editorial": {
+  "desc": "warm paper magazine: serif display, running heads, slow dissolves and wipes, ambient score",
+  "palette": {
+   "bg": "#f3efe6",
+   "surf": "#fbf8f1",
+   "line": "#d9d2c3",
+   "text": "#2a2622",
+   "mute": "#7a7166",
+   "accent": "#b3261e",
+   "hot": "#d9480f",
+   "cream": "#14110f"
+  },
+  "fonts": {
+   "sans": "Inter",
+   "mono": "IBM Plex Mono",
+   "serif": "Fraunces",
+   "disp": "Fraunces"
+  },
+  "weights": {
+   "sans": 400,
+   "sansBold": 800,
+   "mono": 400,
+   "monoBold": 500,
+   "serif": 400,
+   "disp": 900
+  },
+  "bg": "paper",
+  "hud": "editorial",
+  "post": "paper",
+  "camera": "drift",
+  "transitions": [
+   "dissolve",
+   "wipe",
+   "iris",
+   "dissolve"
+  ],
+  "transitionDur": 0.6,
+  "motion": {
+   "in": "outQuart",
+   "out": "inOutSine",
+   "move": "inOutSine"
+  },
+  "glow": 0,
+  "flash": 0.3,
+  "radius": 2,
+  "caps": false,
+  "audio": "ambient",
+  "bpm": 90,
+  "fadeTo": "#f3efe6"
+ },
+ "swiss": {
+  "desc": "international typographic style: white, black, one red, 12-col grid, hard pushes, clicky minimal score",
+  "palette": {
+   "bg": "#f2f2f0",
+   "surf": "#ffffff",
+   "line": "#1a1a1a",
+   "text": "#111111",
+   "mute": "#5b5b5b",
+   "accent": "#e30613",
+   "hot": "#ff4b2b",
+   "cream": "#0a0a0a"
+  },
+  "fonts": {
+   "sans": "Archivo",
+   "mono": "JetBrains Mono",
+   "serif": "Archivo",
+   "disp": "Archivo Black"
+  },
+  "weights": {
+   "sans": 400,
+   "sansBold": 900,
+   "mono": 400,
+   "monoBold": 700,
+   "serif": 700,
+   "disp": 400
+  },
+  "bg": "swiss",
+  "hud": "minimal",
+  "post": "clean",
+  "camera": "static",
+  "transitions": [
+   "push",
+   "slide",
+   "shutter",
+   "cut"
+  ],
+  "transitionDur": 0.4,
+  "motion": {
+   "in": "outCubic",
+   "out": "in",
+   "move": "inOut"
+  },
+  "glow": 0,
+  "flash": 0,
+  "radius": 0,
+  "caps": true,
+  "audio": "minimal",
+  "bpm": 120,
+  "fadeTo": "#f2f2f0"
+ },
+ "blueprint": {
+  "desc": "engineering drawing: navy blueprint grid, line-art draw-ons, title block, wipes and irises, cinematic score",
+  "palette": {
+   "bg": "#0f2a4a",
+   "surf": "#12335a",
+   "line": "#3d6c9e",
+   "text": "#dce9f7",
+   "mute": "#8fb0d3",
+   "accent": "#7fd1ff",
+   "hot": "#ffd166",
+   "cream": "#ffffff"
+  },
+  "fonts": {
+   "sans": "IBM Plex Sans",
+   "mono": "IBM Plex Mono",
+   "serif": "Instrument Serif",
+   "disp": "IBM Plex Sans Condensed"
+  },
+  "weights": {
+   "sans": 400,
+   "sansBold": 600,
+   "mono": 400,
+   "monoBold": 500,
+   "serif": 400,
+   "disp": 700
+  },
+  "bg": "blueprint",
+  "hud": "blueprint",
+  "post": "clean",
+  "camera": "drift",
+  "transitions": [
+   "wipe",
+   "iris",
+   "shutter",
+   "wipe"
+  ],
+  "transitionDur": 0.5,
+  "motion": {
+   "in": "outCubic",
+   "out": "in",
+   "move": "inOut"
+  },
+  "glow": 0.3,
+  "flash": 0.2,
+  "radius": 0,
+  "caps": true,
+  "audio": "cinematic",
+  "bpm": 100
+ },
+ "soft": {
+  "desc": "friendly product: pastel mesh gradients, rounded type, springy motion, zoom transitions, lo-fi score",
+  "palette": {
+   "bg": "#f6f1fb",
+   "surf": "#ffffff",
+   "line": "#e4dcef",
+   "text": "#2b2140",
+   "mute": "#857a99",
+   "accent": "#7c4dff",
+   "hot": "#d6336c",
+   "cream": "#1b1330"
+  },
+  "fonts": {
+   "sans": "Manrope",
+   "mono": "DM Mono",
+   "serif": "Instrument Serif",
+   "disp": "Manrope"
+  },
+  "weights": {
+   "sans": 400,
+   "sansBold": 800,
+   "mono": 400,
+   "monoBold": 500,
+   "serif": 400,
+   "disp": 800
+  },
+  "bg": "mesh",
+  "hud": "none",
+  "post": "clean",
+  "camera": "dolly",
+  "transitions": [
+   "zoom",
+   "dissolve",
+   "push",
+   "zoom"
+  ],
+  "transitionDur": 0.5,
+  "motion": {
+   "in": "spring",
+   "out": "in",
+   "move": "inOutSine"
+  },
+  "glow": 0,
+  "flash": 0.2,
+  "radius": 28,
+  "caps": false,
+  "audio": "lofi",
+  "bpm": 90,
+  "fadeTo": "#f6f1fb"
+ },
+ "terminal": {
+  "desc": "green-phosphor CRT: monospace everything, bloom, scanlines, status bar, glitch cuts, glitch score",
+  "palette": {
+   "bg": "#050805",
+   "surf": "#0a120b",
+   "line": "#1d3b22",
+   "text": "#b8f5c4",
+   "mute": "#5f9a6b",
+   "accent": "#39ff7a",
+   "hot": "#b6ff3a",
+   "cream": "#d8ffe0"
+  },
+  "fonts": {
+   "sans": "JetBrains Mono",
+   "mono": "JetBrains Mono",
+   "serif": "VT323",
+   "disp": "VT323"
+  },
+  "weights": {
+   "sans": 400,
+   "sansBold": 700,
+   "mono": 400,
+   "monoBold": 700,
+   "serif": 400,
+   "disp": 400
+  },
+  "bg": "crt",
+  "hud": "terminal",
+  "post": "crt",
+  "camera": "handheld",
+  "transitions": [
+   "glitch",
+   "cut",
+   "flash",
+   "glitch"
+  ],
+  "transitionDur": 0.3,
+  "motion": {
+   "in": "outCubic",
+   "out": "in",
+   "move": "inOut"
+  },
+  "glow": 0.8,
+  "flash": 0.8,
+  "radius": 0,
+  "caps": false,
+  "audio": "glitch",
+  "bpm": 144
+ },
+ "storybook": {
+  "desc": "illustrated 2D world: flat vector art, sky gradients, no HUD, gentle camera, dissolves and irises, warm score",
+  "palette": {
+   "bg": "#bfe3f5",
+   "surf": "#ffffff",
+   "line": "#2b3a55",
+   "text": "#1f2a44",
+   "mute": "#5d6b86",
+   "accent": "#ff7a45",
+   "hot": "#e8590c",
+   "cream": "#14213d"
+  },
+  "fonts": {
+   "sans": "Manrope",
+   "mono": "DM Mono",
+   "serif": "Fraunces",
+   "disp": "Fraunces"
+  },
+  "weights": {
+   "sans": 500,
+   "sansBold": 800,
+   "mono": 400,
+   "monoBold": 500,
+   "serif": 400,
+   "disp": 900
+  },
+  "bg": "gradient",
+  "bgOpts": {
+   "top": "#9fd6f2",
+   "bottom": "#e8f6fd"
+  },
+  "hud": "none",
+  "post": "clean",
+  "camera": "static",
+  "transitions": [
+   "iris",
+   "dissolve",
+   "push"
+  ],
+  "transitionDur": 0.6,
+  "motion": {
+   "in": "spring",
+   "out": "in",
+   "move": "inOutSine"
+  },
+  "glow": 0,
+  "flash": 0,
+  "radius": 18,
+  "caps": false,
+  "audio": "lofi",
+  "bpm": 100,
+  "fadeTo": "#000000"
+ }
+}
