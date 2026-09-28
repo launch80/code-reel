@@ -7,6 +7,8 @@ description: Generate a motion graphics video ("reel") entirely in code — HTML
 
 Build a short motion-graphics video with no video editor: one HTML file draws every frame on a canvas, Playwright + headless Chromium captures frames at 60fps into ffmpeg, numpy synthesizes the soundtrack, ffmpeg muxes audio+video.
 
+**Step 0 of every run: run the interview** (`references/interview.md`) — one round, defaults on every question, decisions echoed back and saved to `brief.md` before anything is scaffolded.
+
 ## 0. Three ways to use this skill (pick one)
 
 | Mode | Who writes the content | Who writes scene code | How |
@@ -22,9 +24,15 @@ brief ──► director.py ──► timeline.json (+_meta.json) ──► vali
              (mode 1)        (mode 3: blank.json)          (mode 2: + scene_custom.js)      frames.mkv ─┘        reel.mp4 + qc_report.xlsx
 ```
 
-## 1. Collect parameters
+## 1. Interview first (always — before any file is written)
 
-The user's request (or `/skill:code-reel ...` arguments) may include `key=value` pairs. Recognized keys and defaults:
+**Open every invocation with the interview.** Read `references/interview.md` and run it: one message, up to 7 numbered questions, each with a default, covering the knobs that drive the pipeline — topic, platform/aspect, duration, on-screen claims + sources, who writes the story (director / agent / fill-in / blueprint), look (palette/HUD/grain/audio), and render plan (draft→approve→final vs straight-to-final). Then close by echoing the decision table and what happens next.
+
+- **Only ask about gaps.** The request may already contain `key=value` pairs or plain prose that answers questions — parse those, skip answered rows, ask only the remainder. If the user says "just do it"/"surprise me", use the defaults, still echo the table, and proceed without waiting.
+- **Never ask what doesn't change a file** — the score is derived, so there is no music question; aspect changes `OUT_W/OUT_H`; DPR changes wall-clock time; claims feed the QC fact-check.
+- **Save the answers to `brief.md`** in the project dir — in mode 1 that exact file is the `director.py --brief` input, and it is the human record behind the QC fact-check.
+
+Recognized keys if provided up front, and defaults:
 
 | Key | Meaning | Default |
 |---|---|---|
@@ -40,9 +48,9 @@ The user's request (or `/skill:code-reel ...` arguments) may include `key=value`
 | `brand` | brand name / site to match (scrape colors, fonts, copy) | — |
 | free text | content: scenes, stats, numbers, taglines, end-card text | — |
 
-If `duration`, scene content, or the key numbers/stats are missing, ask ONE short question bundling everything missing. If the user says "just do it", use the template's structure and their content, keep 15s.
-
 If `brand` is given, extract real hex colors, font families and copy lines from that site (curl/fetch the HTML + CSS) before writing text into the reel.
+
+**Claims without sources are a QC event, not a blocker.** If the user can't source a number yet, write the reel with it, add no `"sources"` entry (or mark it), and let the Fact Check tab flag it `Medium risk` — say so out loud in the closing echo. Never silently invent a statistic and present it as fact: placeholders stay placeholders.
 
 ## 2. Scaffold a project
 
