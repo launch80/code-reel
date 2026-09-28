@@ -1,0 +1,29 @@
+{"treatments": [
+ {"title": "Small Core", "logline": "What if your agent were small? pi splits the monolith into a tiny core and the plugins you choose.",
+  "metaphor": "a heavy monolith slab that cracks into modular tiles orbiting a tiny core",
+  "style": {"pack": "swiss", "overrides": {"palette": {"bg": "#0d1116", "surf": "#161d27", "line": "#2a333d", "text": "#ebe7e4", "mute": "#9fa4ab", "accent": "#6a9fcc", "hot": "#F1BE58", "cream": "#ffffff"}, "fadeTo": "#000000"}},
+  "structure": "question → reveal", "motif": "square tiles on a strict grid — the same tile becomes plugin, counter cell and cursor",
+  "scenes": [
+   {"name": "monolith", "beats": 6, "kind": "custom", "idea": "A huge slab labelled AGENT fills the grid and presses down; the question types across it.", "on_screen": ["What if your agent were small?"], "claims": []},
+   {"name": "core_split", "beats": 8, "kind": "custom", "idea": "The slab cracks along grid lines; tiles fly out and settle in orbit around a tiny core square marked pi; each tile gets a plugin label.", "on_screen": ["pi", "prompt templates", "skills", "extensions", "themes", "packages", "TypeScript SDK"], "claims": []},
+   {"name": "tile_tally", "beats": 8, "kind": "custom", "idea": "Tiles rain into a 68-cell grid (one per extension example) while two side tallies count docs pages and keybindings.", "on_screen": ["68 extension examples", "37 docs pages", "90 keybindings"], "claims": ["ext_examples", "docs_pages", "keybindings"]},
+   {"name": "adapt_line", "beats": 4, "kind": "custom", "idea": "The tiles rearrange into the shape of the viewer's own workflow as the README line lands.", "on_screen": ["Adapt Pi to your workflow, not the other way around."], "claims": []},
+   {"name": "install_end", "beats": 4, "kind": "custom", "idea": "One tile becomes a blinking cursor; the npm command types out; pi.dev and the version.", "on_screen": ["npm i -g @earendil-works/pi-coding-agent", "pi.dev", "v0.87.1"], "claims": ["version"]}]},
+ {"title": "Five Doors", "logline": "A little lamp-headed courier visits the five doors of pi — interactive, print, JSON, RPC, SDK — counting down to install.",
+  "metaphor": "a small street of five doors, each a mode of the same agent, visited in a countdown",
+  "style": {"pack": "storybook", "overrides": {}},
+  "structure": "countdown / list (N → 1)", "motif": "a warm lamp carried from door to door",
+  "scenes": [
+   {"name": "door_street", "beats": 10, "kind": "custom", "idea": "Tracking shot past five doors numbered 5 to 1; each opens on its mode.", "on_screen": ["interactive", "print", "JSON", "RPC", "SDK"], "claims": ["modes"]},
+   {"name": "lamp_room", "beats": 8, "kind": "custom", "idea": "Inside: shelves of 68 small jars — the extension examples.", "on_screen": ["68 extension examples"], "claims": ["ext_examples"]},
+   {"name": "lamp_out", "beats": 7, "kind": "custom", "idea": "The courier sets the lamp in the window: pi.dev.", "on_screen": ["pi.dev"], "claims": []},
+   {"name": "door_end", "beats": 5, "kind": "endcard", "idea": "End card.", "on_screen": ["pi", "pi.dev"], "claims": []}]},
+ {"title": "278 Releases Deep", "logline": "A walkthrough down a mine shaft of 278 releases to the small core at the bottom.",
+  "metaphor": "a vertical shaft of stacked release strata, descended by an elevator",
+  "style": {"pack": "signal", "overrides": {}},
+  "structure": "product walkthrough", "motif": "an elevator light descending through strata",
+  "scenes": [
+   {"name": "shaft_descent", "beats": 12, "kind": "custom", "idea": "Camera descends through 278 thin strata labelled by month.", "on_screen": ["278 releases"], "claims": ["releases"]},
+   {"name": "core_room", "beats": 10, "kind": "custom", "idea": "At the bottom: the tiny core with plugins wired in.", "on_screen": ["extensions", "skills", "themes"], "claims": []},
+   {"name": "shaft_up", "beats": 8, "kind": "custom", "idea": "Elevator rises with the install command.", "on_screen": ["npm i -g @earendil-works/pi-coding-agent"], "claims": []}]}
+]}

@@ -1,0 +1,258 @@
+{
+ "_doc": "Blueprint scene metadata used by compile.py (validation + event derivation). Times: numbers are seconds from scene start, strings ending in 'd' are fractions of the scene duration. Project scenes declare the same shape in a /* @meta {...} */ block.",
+ "terminal": {
+  "required": [
+   "cmd"
+  ],
+  "typing": [
+   {
+    "key": "cmd",
+    "a": "0.12d",
+    "b": "0.48d"
+   }
+  ],
+  "text": [
+   "cmd",
+   "prompt",
+   "title",
+   "rows",
+   "progress.label",
+   "ok"
+  ]
+ },
+ "kinetic": {
+  "required": [
+   "words"
+  ],
+  "slams": [
+   {
+    "list": "words",
+    "index": 1
+   }
+  ],
+  "text": [
+   "intro",
+   "words"
+  ]
+ },
+ "cards": {
+  "required": [
+   "cards"
+  ],
+  "ticks": [
+   {
+    "a": "0.3d",
+    "b": "0.6d"
+   }
+  ],
+  "text": [
+   "header",
+   "kicker",
+   "cards",
+   "ticker"
+  ]
+ },
+ "counter": {
+  "required": [
+   "big"
+  ],
+  "typing": [
+   {
+    "key": "promptArg",
+    "a": 0.05,
+    "b": 0.4
+   },
+   {
+    "key": "typing",
+    "a": "0.53d",
+    "b": "0.78d"
+   }
+  ],
+  "ticks": [
+   {
+    "a": 0.3,
+    "b": 1.4
+   }
+  ],
+  "text": [
+   "prompt",
+   "promptArg",
+   "kicker",
+   "big",
+   "unit",
+   "sub",
+   "tagline",
+   "typing"
+  ]
+ },
+ "chart": {
+  "required": [
+   "grow"
+  ],
+  "slams": [
+   {
+    "key": "impact",
+    "default": "0.72d"
+   }
+  ],
+  "ticks": [
+   {
+    "a": 0.2,
+    "b": "impact-0.1"
+   }
+  ],
+  "text": [
+   "line",
+   "grow",
+   "months",
+   "label",
+   "sub"
+  ]
+ },
+ "quote": {
+  "required": [
+   "text",
+   "author"
+  ],
+  "slams": [
+   {
+    "key": "slam",
+    "default": "0.4d"
+   }
+  ],
+  "text": [
+   "tag",
+   "text",
+   "author",
+   "handle"
+  ]
+ },
+ "split": {
+  "required": [
+   "left",
+   "right"
+  ],
+  "text": [
+   "title",
+   "left",
+   "right",
+   "vs"
+  ]
+ },
+ "endcard": {
+  "required": [
+   "word1"
+  ],
+  "bell": 0.05,
+  "typing": [
+   {
+    "key": "url",
+    "a": 0.9,
+    "b": 1.35
+   }
+  ],
+  "text": [
+   "tag",
+   "word1",
+   "word2",
+   "serif",
+   "url",
+   "footer"
+  ]
+ },
+ "statement": {
+  "required": [
+   "text"
+  ],
+  "text": [
+   "kicker",
+   "text"
+  ]
+ },
+ "code": {
+  "required": [
+   "lines"
+  ],
+  "typing": [
+   {
+    "key": "lines",
+    "a": "0.15d",
+    "b": "0.7d"
+   }
+  ],
+  "text": [
+   "file",
+   "lines",
+   "caption"
+  ]
+ },
+ "ui": {
+  "required": [
+   "items"
+  ],
+  "slams": [
+   {
+    "list": "clicks",
+    "key_at": "at"
+   }
+  ],
+  "text": [
+   "app",
+   "nav",
+   "title",
+   "items",
+   "toast"
+  ]
+ },
+ "steps": {
+  "required": [
+   "steps"
+  ],
+  "text": [
+   "title",
+   "steps"
+  ]
+ },
+ "milestones": {
+  "required": [
+   "items"
+  ],
+  "text": [
+   "title",
+   "items"
+  ]
+ },
+ "logo": {
+  "required": [],
+  "bell": 0.5,
+  "text": [
+   "word",
+   "tagline"
+  ]
+ },
+ "ranking": {
+  "required": [
+   "items"
+  ],
+  "ticks": [
+   {
+    "a": "0.12d",
+    "b": "0.6d"
+   }
+  ],
+  "text": [
+   "title",
+   "items",
+   "unit"
+  ]
+ },
+ "route": {
+  "required": [
+   "nodes"
+  ],
+  "text": [
+   "title",
+   "nodes"
+  ]
+ }
+}

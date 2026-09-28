@@ -1,203 +1,90 @@
 # code-reel
 
-Motion-graphics videos generated entirely in code — no video editor, no After
-Effects, no design files. An HTML canvas draws every frame deterministically,
-headless Chromium captures at 60fps, ffmpeg encodes, and numpy synthesizes the
-soundtrack from the same timeline that drives the animation.
+Original motion graphics and illustrated 2D animation, generated entirely in code.
+An HTML canvas draws every frame deterministically, headless Chromium captures
+it, ffmpeg encodes it, numpy writes the soundtrack from the same compiled events
+— and every video's scenes are written for **that** video.
 
-**Example output** — 15s, 1080p60, generated from a single `timeline.json`
-(15s GIF preview; the real MP4 is sharper and has audio):
+![three reels from the same pipeline](assets/showcase.gif)
+*(one pipeline, three videos: a storybook penguin ride with pop-up shop ads, a Swiss-style
+product reel written by the director, and the original dark "signal" showreel)*
 
-![Example reel: Local vs Frontier](assets/example-local-vs-frontier.gif)
+## What it is / isn't
 
-## What this is / isn't
+**Is:** kinetic typography, data stories, product and UI walkthroughs, code,
+diagrams, maps and routes, and flat 2D vector illustration — characters with
+rigged limbs, vehicles, towns, props, camera moves through a parallax world,
+graphics anchored to things in it. Seven style packs, eleven transitions, six
+score presets, 16:9 / 9:16 / 1:1.
 
-**Is**: a code-driven motion-graphics pipeline for launch reels, product promos
-and data stories — kinetic type, terminals, stat cards, counters, charts,
-quotes, splits, endcards — plus a deterministic cinematic post layer (ACES tone
-mapping, shutter motion blur, bloom, grain, lens treatment) and an optional
-local-LLM *director* that turns a written brief into a validated `spec.json`
-**plus bespoke `scene_custom.js` drawing code written for that video** — so no
-two videos are built from the same scene set. Every pixel comes from
-deterministic renderer code; the LLM never touches pixels, only the spec and
-the scene code that gets rendered deterministically.
+**Isn't:** photoreal footage, 3D renders, video-model output, lip-sync, or other
+people's characters. If a brief needs those pixels, this is the wrong tool.
 
-**Isn't**: a general video generator. No illustration, no footage, no video
-models, no photoreal humans — "a penguin riding a bicycle through town" is out
-of scope. If a request needs pixels that aren't typography, charts, geometry
-or procedural camera effects, this skill can't produce them. The skill repo's
-README prompt deliberately advertises that boundary so users aren't surprised.
-
-## Get started (paste this to your agent)
-
-Paste this into any agent session that can run shell commands (Claude Code,
-Codex, pi, OpenClaw, …). It installs the skill, sets up the environment, and
-starts generating — replace the content block with your own topic, numbers, and
-tagline:
+## Use it from an agent
 
 ```text
-Set up the code-reel skill and make me a video:
-
-0. First interview me (references/interview.md): one question at a time,
-   defaults on each — topic, platform, length, claims + sources, who writes
-   the story, look, render plan. Echo the decision table back before
-   building anything.
-
-1. git clone https://github.com/launch80/code-reel.git ~/.agents/skills/code-reel
-   (if it already exists, git pull instead). The skill is discovered at
-   ~/.agents/skills/code-reel/SKILL.md — reload the session if needed.
-2. Environment: cd ~/.agents/skills/code-reel/templates, create a venv, run
-   pip install -r requirements.txt, python -m playwright install chromium,
-   and make sure ffmpeg is on PATH (brew install ffmpeg if missing).
-3. Build a 15s reel with the code-reel skill. Use the director (mode 1) so
-   the model writes bespoke scenes for THIS video — do not just reuse the 8
-   shipped archetypes (that is a draft, not a final). Content:
-   - Topic: local AI vs frontier/cloud AI — local wins on privacy, cost, control
-   - Stats to feature: $312/yr frontier API vs $0 local; 100% of prompts local;
-     300h+ frontier downtime per year; 2,000 community members
-   - Kinetic words: PRIVATE. (0 uploads) / FREE. ($0/mo) / YOURS. (pinned forever)
-   - End card: launch80 · "local ai, dialed in." · launch80.com
-   Run `python3 director.py --mode invent --brief brief.md --model <local>`
-   (it writes `scene_custom.js` with new scenes + the timeline, validates with
-   `--allow-custom`, and render-probes every new scene). Then render PNG stills
-   at DPR=1 for a collision/overflow check, fix anything that looks wrong, run
-   the full DPR=2 build and `qc.py`, and hand me the final MP4.
+Use the code-reel skill (SKILL.md) to make me a 15 s video: <what it's for, who
+it's for, the claims and their sources, the look>. Interview me first.
 ```
+The agent runs the flow in `SKILL.md`: interview → brief → `init` (seed) →
+treatments (it looks at the style frames) → timeline → one scene file per scene
+(each gated, each looked at) → review → draft → final → QC. With a local model
+instead: `--backend ollama --model <m>`; the prompts and gates are identical.
 
-The agent will interview you — one question at a time, each with a default,
-so "yeah" is always a valid answer (say "just do it" and it fills the rest
-itself) — save your answers to `brief.md`, edit `timeline.json` (the only
-file you touch), render stills for review, then `./build.sh` → `reel.mp4` →
-`qc.py` (~15s, 1080p60, ~15 MB, ~11 min).
-
-## Three ways to use it
-
-| | Mode | Who writes the scenes | You do |
-|---|---|---|---|
-| **1** | **Director** | the **director LLM** — a local model (Ollama / vLLM / LM Studio / MLX) writes **bespoke scenes for this video** in `scene_custom.js` and composes a `timeline.json` from your brief (default `--bespoke 2`; the 8 shipped archetypes are the fallback, `--bespoke 0`) | paste a brief, review stills, approve |
-| **2** | **Blueprints** | you + a local LLM, in `scene_custom.js` — new scene types as JS functions that *reference the skill's own blueprint code* (`REG` in `reel.html`) so the style stays consistent | ask your agent: “read `references/blueprints.md` + the REG in `reel.html`, write a new scene in `scene_custom.js`” |
-| **3** | **Fill-in** | nobody — you fill the `<SLOT>`s in `templates/blank.json` | 30 seconds of typing; `validate.py` refuses to render while slots are unfilled |
-
-All three converge on the same pipeline:
-
-```
-interview ──► brief ──> director.py ──> timeline.json ──> validate.py ──> render.py ──> audio.py ──> build.sh ──> reel.mp4 ──> qc.py
-(1 round,    (mode 1)   (mode 2/3 edit     (contracts,    (stills       (derived     (single      (22 auto     (25 manual
- defaults)              here, or            beat grid,     first,        from the     lossy       tests,       tests
-                         scene_custom.js)    slots)         then full)    same file)   encode)     xlsx)        pre-filled)
-```
-
-## QC — the 66-test discipline
-
-`python3 qc.py reel.mp4 timeline.json` measures what a machine can measure
-(tech specs, **color tags**, fast-start, black/freeze detection, EBU R128
-loudness, A/V length match) and pre-fills the rest for a human with exact
-timecodes (visual checks per scene, transitions, delivery, fact-check).
-Output: `qc_report.md` + a 5-tab `qc_report.xlsx` (Summary · Test Sequence ·
-Cue Sheet · Tech Specs · Fact Check). `READY TO PUBLISH?` only says yes when
-the auto-tests are clean **and** a human has resolved every manual row.
-See `references/qc.md`.
-
-## How it works
-
-```
-timeline.json ──┬──> reel.html ──(Playwright, 60fps, 2x supersampled)──> frames.mkv (lossless FFV1)
-                │                                                              │
-                └──> audio.py ──(numpy/scipy: beats, risers, impacts)──> audio.wav
-                                                                               │
-                              build.sh ◄───────────────────────────────────────┘
-                                 │  single lossy encode: Lanczos downscale,
-                                 ▼  yuv420p, BT.709 tags, CRF 17
-                              reel.mp4  (1080p60, 15s, ~15 MB)
-```
-
-One file — `timeline.json` — is the single source of truth. The reel is a list
-of scenes (`terminal`, `kinetic`, `cards`, `counter`, `chart`, `quote`, `split`,
-`endcard`); cut times, HUD scene labels, flash/shake impacts, and the entire
-audio score (beats, risers, slams, typing clicks, counter ticks) are **derived**
-from it. Recomposing a reel never requires touching drawing code.
-
-## Manual quickstart (no agent)
+## Use it by hand
 
 ```bash
-cd templates
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-python -m playwright install chromium
-# ffmpeg must be on PATH (brew install ffmpeg)
-
-# playable preview in Chrome (space = play/pause, scrubber, audio)
-open reel.html            # or: python3 -m http.server 8000 → http://localhost:8000
-
-# quick frame checks (PNG, no full render)
-python3 render.py stills 0.8,3.4,8.5
-
-# validate the timeline, then full build
-python3 validate.py
-./build.sh
+pip install -r requirements.txt && python -m playwright install chromium   # + ffmpeg on PATH
+python3 reel.py init my-reel --seed 7 --style editorial
+$EDITOR my-reel/brief.md my-reel/timeline.json my-reel/scenes/opening.js
+python3 reel.py review my-reel          # contact sheet + layout audit + novelty + critique
+open my-reel/.reel/index.html           # live preview: space, arrows, scrubber
+python3 reel.py run my-reel --draft     # -> my-reel/reel.mp4 + .reel/qc_report.xlsx
 ```
+
+## How it fits together
+
+```
+brief.md ─┐
+claims.json ─┤          ┌─ .reel/timeline.js ──> index.html (engine + scenes) ──> Chromium ──> frames.mkv (FFV1, lossless)
+timeline.json ─┼─ compile ─┤                                                                          │
+scenes/*.js ─┘   (style,   └─ .reel/timeline.resolved.json ──> audio (score + sfx) ──> audio.wav     │
+                 claims,                                  └──> qc / novelty                          ▼
+                 events)                                               build: one lossy encode, BT.709, −14 LUFS loop ──> reel.mp4
+```
+
+- `compile` is the single source of truth: style pack expansion, claim resolution,
+  scene contracts, and **all** timed events (cuts, transitions, hits, typing, ticks).
+  The browser and the soundtrack read the same compiled events, so sync can't drift.
+- `audit` records every piece of text the scene draws and fails overlaps, off-canvas
+  text, blank scenes and JS errors (with file:line).
+- `novelty` fingerprints each scene's layout and edges against the library of
+  blueprints and past reels; a recolor of an old layout is flagged as a re-skin.
+- `direct` drives the creative steps through one model interface — `agent`,
+  `ollama`/`openai`, or `mock` — with identical prompts, file names and gates.
 
 ## Files
 
-| File | Role |
+| path | what |
 |---|---|
-| `templates/timeline.json` | **The reel.** Scenes, durations, content, theme, HUD. All timing lives here. |
-| `templates/blank.json` | Mode 3: the same structure with `<SLOT>` placeholders — fill them, `validate.py` refuses to pass while any remain. |
-| `templates/reel.html` | Player + scene registry + motion toolkit. Data-driven: reads the timeline (injected at render, fetched in preview). Also a standalone live preview with a scrubber. |
-| `templates/render.py` | Captures frames via canvas `toDataURL` → lossless FFV1 `frames.mkv` (or PNG stills). `DPR` env = supersampling factor (default 2). |
-| `templates/audio.py` | Synthesizes `audio.wav` from the timeline: beats at `bpm`, kick/hat/pad, risers at cuts, impacts at slams, typing clicks, counter ticks, bell. |
-| `templates/events.py` | The single event derivation both audio and QC import — sync is by construction, not by luck. |
-| `templates/validate.py` | Checks the timeline against the scene contracts: required params, beat-grid cuts, whole-frame boundaries, word/impact offsets, unfilled slots. |
-| `templates/director.py` | Mode 1: brief → local LLM → validated `timeline.json` + `timeline_meta.json` (model, seed, hash, repair round). Runtime-agnostic. |
-| `templates/qc.py` | Post-render QC: 22 measured tests + 25 pre-filled manual tests → `qc_report.md` + `qc_report.xlsx`. |
-| `templates/build.sh` | Single lossy encode: `frames.mkv` → Lanczos → `yuv420p` → `setparams` BT.709 tags → two-pass loudnorm −14 LUFS → libx264 faststart. |
-| `references/scenes.md` | The scene params contract (what each `p` key does). |
-| `references/blueprints.md` | Mode 2: how to write new scene types in `scene_custom.js` against the template's own helpers. |
-| `references/qc.md` | The QC test list, what's measured vs manual, and the fact-check rules. |
-| `prompts/` | Ready-made prompts for generating reels with this skill. |
-| `fonts/` | Self-hosted woff2 (DM Sans, DM Mono, Instrument Serif, Russo One). |
+| `SKILL.md` | the flow an agent follows |
+| `reel.py` | the only entry point (init, brand, compile, stills, audit, contact, novelty, review, render, audio, build, qc, run, direct, status) |
+| `reelkit/` | compile, render, audio, build, qc, novelty, director, llm, brand |
+| `engine/` | core primitives + audit hooks, looks (bg/hud/post/camera/transitions/shader), 16 blueprint scenes, illustration toolkit, player/preview, styles.json, scenes.json, fonts |
+| `prompts/` | director prompts + rotating worked examples (identical for every backend) |
+| `references/` | interview, api, scenes, styles, claims, director, critique, qc |
+| `library/` | novelty fingerprints + their source timelines (`tools/build_library.py`) |
+| `examples/penguin` | illustration acceptance test — penguin biking through town, pop-out ads per store |
+| `examples/pi-small-core` | a director run by an agent, with its full prompt/answer transcript |
+| `tests/` | pytest suite that drives `reel.py` exactly as an agent does |
 
-## Quality model (why it looks the way it does)
+## Tests
 
-- **Never double-lossy**: frames go to a lossless FFV1/RGB intermediate; the only
-  lossy encode is the final H.264 in `build.sh`.
-- **2× supersampling**: the canvas draws at 3840×2160 (`DPR=2`) and the build
-  Lanczos-downscales to 1080p — text, glows and thin lines are properly anti-aliased.
-- **Deterministic color**: `--force-color-profile=srgb` + `setparams` BT.709 tags +
-  explicit full→limited range conversion. No player guessing, no color shift.
-- **Deterministic frames**: `render(t)` is pure — fixed-seed `rng()`, no
-  `Math.random()`, frame times computed from the integer index. Any frame is
-  reproducible out of order.
-- **Audio-visual sync**: beats, risers, slams and clicks come from the same
-  `timeline.json` the animation uses, so a cut always lands on a hit.
-- **Live preview**: `reel.html` in a browser is a playable player (scrubber,
-  frame stepping, sound) — no render needed to review motion.
-
-## Env knobs
-
-| Var | Where | Meaning |
-|---|---|---|
-| `DPR` | render.py, build.sh | `2` = 2× supersampled (default), `1` = 1:1, faster |
-| `TIMELINE` | render.py, audio.py, validate.py | path to an alternate timeline file |
-| `OUT` | build.sh | output name (default `reel.mp4`) |
-| `OUT_W`/`OUT_H` | build.sh | final size (default 1920×1080; `1080 1920` for 9:16) |
-| `CRF` | build.sh | quality (default 17; lower = better/bigger) |
-| `CHROME_PATH` | render.py | browser binary if Playwright's isn't installed |
-
-## Rendering time
-
-~15s per 10s of video at `DPR=2` (a 15s reel ≈ 10–12 min), ~1/3 of that at
-`DPR=1`. Stills render in ~1s each — use them for everything except the final
-look-check.
-
-## Making a different reel
-
-1. Copy `templates/` (or let the skill do it).
-2. Pick a mode: run the **director** (mode 1), fill `blank.json` (mode 3), or
-   edit `timeline.json` directly (or add a scene in `scene_custom.js`, mode 2).
-   Keep every `dur` on the beat grid (multiples of `60/bpm`).
-3. `python3 validate.py` → `python3 render.py stills 0.8,3.4,5.6,8.5,11.9,14.0`
-   → review → `./build.sh` → `python3 qc.py reel.mp4 timeline.json`.
-4. New scene types: write `defineScene('name', fn)` in `scene_custom.js`
-   (see `references/blueprints.md`), `validate.py --allow-custom`, and it
-   renders with zero changes to the template.
+```bash
+python3 -m pytest -q tests      # ~5 min; every test calls the CLI, not internals
+```
+Compile contracts, claims, seed variation, every style/bg/hud/post/camera/transition,
+audio determinism and sync, layout-audit catches, vertical layouts, brand scanning,
+examples in `--final`, an end-to-end render, and the director: a recorded agent
+session (`tests/fixtures/pi_small_core`) replayed through the mock backend —
+same prompts, same gates, same repair loop.

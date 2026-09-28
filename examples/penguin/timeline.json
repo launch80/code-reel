@@ -1,0 +1,81 @@
+{
+ "version": 2,
+ "name": "MAIN STREET",
+ "w": 1920,
+ "h": 1080,
+ "fps": 60,
+ "seed": 2718,
+ "style": {
+  "pack": "storybook"
+ },
+ "hud": false,
+ "literals": [
+  "$5",
+  "2 for",
+  "-20%",
+  "Buy 2, get 3",
+  "8:02",
+  "6 a.m."
+ ],
+ "timeline": [
+  {
+   "scene": "town_open",
+   "beats": 5,
+   "name": "MORNING",
+   "p": {
+    "kicker": "Main Street, 8:02 a.m."
+   }
+  },
+  {
+   "scene": "town_ride",
+   "beats": 15,
+   "name": "THE RIDE",
+   "transition": "cut",
+   "slams": [
+    2.4,
+    4.8,
+    7.2
+   ],
+   "p": {
+    "ads": [
+     {
+      "title": "Warm croissants",
+      "body": "baked at 6 a.m. \u2014 2 for $5",
+      "badge": "2 for $5"
+     },
+     {
+      "title": "Tune-up special",
+      "body": "brakes, gears, a little love",
+      "badge": "-20%"
+     },
+     {
+      "title": "Buy 2, get 3",
+      "body": "the third book is on us",
+      "badge": "NEW"
+     },
+     {
+      "title": "Krill Swirl",
+      "body": "new flavor, very cold",
+      "badge": "NEW"
+     }
+    ]
+   }
+  },
+  {
+   "scene": "town_close",
+   "beats": 5,
+   "name": "SHOP LOCAL",
+   "transition": {
+    "type": "iris",
+    "dur": 0.9,
+    "x": 0.42,
+    "y": 0.62
+   },
+   "p": {
+    "title": "Main Street",
+    "line": "shop local \u00b7 ride slow",
+    "url": "mainstreet.example"
+   }
+  }
+ ]
+}

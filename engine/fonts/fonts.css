@@ -1,0 +1,33 @@
+@font-face{font-family:"Archivo Black";font-weight:400;font-style:normal;src:url(archivo-black-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:400;font-style:normal;src:url(archivo-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:700;font-style:normal;src:url(archivo-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:900;font-style:normal;src:url(archivo-latin-900-normal.woff2) format("woff2")}
+@font-face{font-family:"Chakra Petch";font-weight:700;font-style:normal;src:url(chakra-petch-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Mono";font-weight:400;font-style:normal;src:url(dm-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Mono";font-weight:500;font-style:normal;src:url(dm-mono-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Sans";font-weight:400;font-style:normal;src:url(dm-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Sans";font-weight:700;font-style:normal;src:url(dm-sans-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Sans";font-weight:800;font-style:normal;src:url(dm-sans-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:400;font-style:italic;src:url(fraunces-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:400;font-style:normal;src:url(fraunces-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:700;font-style:normal;src:url(fraunces-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:900;font-style:normal;src:url(fraunces-latin-900-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:400;font-style:normal;src:url(ibm-plex-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;font-style:normal;src:url(ibm-plex-mono-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans Condensed";font-weight:700;font-style:normal;src:url(ibm-plex-sans-condensed-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-weight:400;font-style:normal;src:url(ibm-plex-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-weight:600;font-style:normal;src:url(ibm-plex-sans-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Instrument Serif";font-weight:400;font-style:italic;src:url(instrument-serif-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:"Instrument Serif";font-weight:400;font-style:normal;src:url(instrument-serif-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:400;font-style:normal;src:url(inter-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:600;font-style:normal;src:url(inter-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:800;font-style:normal;src:url(inter-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-weight:400;font-style:normal;src:url(jetbrains-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-weight:700;font-style:normal;src:url(jetbrains-mono-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:400;font-style:normal;src:url(manrope-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:600;font-style:normal;src:url(manrope-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:800;font-style:normal;src:url(manrope-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Russo One";font-weight:400;font-style:normal;src:url(russo-one-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Space Grotesk";font-weight:400;font-style:normal;src:url(space-grotesk-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Space Grotesk";font-weight:700;font-style:normal;src:url(space-grotesk-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"VT323";font-weight:400;font-style:normal;src:url(vt323-latin-400-normal.woff2) format("woff2")}

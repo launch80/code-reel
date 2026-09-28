@@ -1,0 +1,22 @@
+{
+ "version": {
+  "value": "0.87.1",
+  "source": "package.json version \u2014 @earendil-works/pi-coding-agent",
+  "date": "2026-09-28"
+ },
+ "ext_examples": {
+  "value": 68,
+  "source": "ls examples/extensions/*.ts | wc -l",
+  "date": "2026-09-28"
+ },
+ "docs_pages": {
+  "value": 37,
+  "source": "ls docs/*.md | wc -l",
+  "date": "2026-09-28"
+ },
+ "keybindings": {
+  "value": 90,
+  "source": "key rows in docs/keybindings.md",
+  "date": "2026-09-28"
+ }
+}

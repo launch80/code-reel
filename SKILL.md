@@ -1,111 +1,105 @@
 ---
 name: code-reel
-description: Generate a motion graphics video ("reel") entirely in code — HTML canvas animation rendered frame-by-frame in headless Chromium, encoded with ffmpeg, with a synthesized numpy soundtrack. Use when the user asks to make/renders a promo video, motion reel, launch video, stat animation, showreel, or a kinetic-typography/counter/chart animation. The Launch80 15s showreel is the working template.
+description: Make an original motion-graphics or illustrated 2D video entirely in code (HTML canvas → headless Chromium → ffmpeg, synthesized soundtrack) — launch reels, promos, explainers, showreels, data stories, kinetic type, and flat-vector character/world animation (e.g. a penguin biking through town with pop-up ads). Use when the user asks for a video, reel, promo, animation, motion graphics or showreel.
 ---
 
-# Code reel
+# code-reel
 
-Build a short motion-graphics video with no video editor: one HTML file draws every frame on a canvas, Playwright + headless Chromium captures frames at 60fps into ffmpeg, numpy synthesizes the soundtrack, ffmpeg muxes audio+video.
-
-**Step 0 of every run: interview the user** (`references/interview.md`) — interactively, one question at a time with defaults offered, follow-ups when an answer opens a door; decisions echoed as a table and saved to `brief.md` before anything is scaffolded.
-
-## 0. Three ways to use this skill (pick one)
-
-| Mode | Who writes the content | Who writes scene code | How |
-|---|---|---|---|
-| **1 · Director** | an LLM composes the whole timeline from a written brief | **the LLM writes NEW bespoke scenes for this video** (`--bespoke N`, default 2; `--bespoke 0` = archetypes only) | `python3 director.py --mode invent --brief brief.md --model <local-model>` |
-| **2 · Blueprint** | you + a local LLM, iterating in an agent session | the LLM writes NEW scene types in `scene_custom.js` | read `references/blueprints.md`; the LLM adds `defineScene('name', fn)` — never fork `reel.html` |
-| **3 · Fill-in-blank** | you (or the director pre-fills) | nobody | copy `templates/blank.json`, fill every `<SLOT>`, validate |
-
-All three converge on the same frozen `timeline.json` and the same deterministic pipeline (`validate.py` → `render.py` → `audio.py` → `build.sh` → `qc.py`). The LLM never produces pixels — it produces JSON + `scene_custom.js`; timing lives only in the frozen file. Mode 1/3 output is byte-reproducible; mode 2 adds a `scene_custom.js` beside the project files (validate with `--allow-custom`).
-
-**Uniqueness rule: the 8 archetypes are the skeleton, not the look.** Every final reel contains at least one `defineScene` written for that video — in mode 1 the director generates them automatically (`--bespoke 2`): the LLM writes the JS, it is syntax-gated with `node --check`, the timeline is validated with `--allow-custom`, and every bespoke scene is **render-probed** (two DPR=1 stills must contain real pixels in the safe area, or the JS is repaired and re-probed). Archetypes-only output is a draft, never a final delivery.
+Every frame is drawn by code written **for this video**. The skill is one
+pipeline (`reel.py`) with gates — compile, layout audit, novelty, QC — that
+run the same way whoever does the creative work: you (the agent), a local
+model, or the test suite replaying a recorded session.
 
 ```
-brief ──► director.py ──► timeline.json (+_meta.json) ──► validate.py ──► render.py ──► audio.py ──► build.sh ──► qc.py
-             (mode 1)        (mode 3: blank.json)          (mode 2: + scene_custom.js)      frames.mkv ─┘        reel.mp4 + qc_report.xlsx
+interview → brief.md → init (seed) → [brand] → claims.json → treat → pick → timeline → scenes → review → run --draft → run --final → register
+             you        reel.py        reel.py   you          direct   you/user  direct   direct   reel.py   reel.py        reel.py      reel.py
 ```
 
-## 1. Interview first (always — before any file is written)
+`S=<skill dir>`; every command is `python3 $S/reel.py <cmd> <project> ...`.
+Setup once: `pip install -r $S/requirements.txt && python3 -m playwright install chromium` and ffmpeg on PATH.
 
-**Open every invocation with an interactive interview.** Read `references/interview.md` and run it: one question per message, conversational — never a form dump. Cover the knobs that drive the pipeline — topic, platform/aspect, duration, on-screen claims + sources, who writes the story (director-with-bespoke-scenes / blueprint / fill-in), look (palette/HUD/grain/audio), and render plan (draft→approve→final vs straight-to-final). Follow up briefly when an answer opens a door ("match our brand" → *which site?*); skip questions the request already answered; take defaults when the user is stuck or says "just do it". Close by echoing the decision table and what happens next.
+## 1. Interview → brief.md
+Run `references/interview.md` (one question per message, defaults offered,
+skip what the request already answers). Output: `brief.md` with the purpose,
+format (16:9 / 9:16 / 1:1, seconds), every claim with its source, the look
+(brand site / pack / "surprise me"), must-include / must-avoid.
 
-- **One question per message, then wait.** Only ask about gaps — if the request already contains `key=value` pairs or prose that answers a question, acknowledge in one line and move on. Follow-ups are allowed but stay short (one question). If the user says "just do it"/"surprise me"/"stop asking" at any point, fill the rest with defaults, echo the table, and proceed without waiting.
-- **Never ask what doesn't change a file** — the score is derived, so there is no music question; aspect changes `OUT_W/OUT_H`; DPR changes wall-clock time; claims feed the QC fact-check.
-- **Save the answers to `brief.md`** in the project dir — in mode 1 that exact file is the `director.py --brief` input, and it is the human record behind the QC fact-check.
+## 2. Project, seed, brand, claims
+```bash
+reel.py init <proj> --seed <n> [--style <pack>] [--size 16:9|9:16|1:1]   # omit --seed for a fresh random one
+reel.py brand <proj> https://brand.site        # palette + fonts + copy -> brand.json (+ suggested style override)
+```
+The **seed is the variation knob**: every creative choice nobody pinned
+(treatment assignment, transitions, directions, key of the score, model
+sampling) derives from it. Same seed + same answers = the same video; a new
+seed = a different video. Write every on-screen number into `claims.json`
+(`{"id": {"value", "display", "source", "url"}}`) — see `references/claims.md`.
 
-Recognized keys if provided up front, and defaults:
+## 3. Treatments → pick
+```bash
+reel.py direct <proj> treat --backend agent --candidates 3
+```
+The seed assigns each treatment a different style pack and structure; the
+treatments must differ in metaphor too (the gate rejects look-alikes). **Look
+at `.reel/treatments.png`** (one style frame each), then pick — ask the user if
+they are there, otherwise choose the one that draws the brief's nouns best:
+`reel.py direct <proj> pick --pick N`.
 
-| Key | Meaning | Default |
+## 4. Timeline → scenes
+```bash
+reel.py direct <proj> timeline --backend agent     # timeline.json + claims refs, compile-gated
+reel.py direct <proj> scenes   --backend agent     # one scenes/<name>.js per custom scene
+```
+Each scene is gated: syntax → compile → layout audit → novelty, with a repair
+round that carries the exact report. After a scene passes, **open
+`.reel/review/<name>.png`** and judge it like a designer; fix by editing the
+file (then `reel.py review`). Custom scenes must carry the reel (`--final`
+requires ≥50% of runtime); the 16 blueprints are references and occasional
+building blocks. Scene API: `references/api.md`. Worlds/characters/props:
+the illustration section of the API (world camera, parallax, IK rigs, props,
+storefronts, anchored pop-outs) — see `examples/penguin`.
+
+### Backends — who answers the prompts
+| `--backend` | who writes | how |
 |---|---|---|
-| `duration` | total length in seconds | `15` |
-| `bpm` | beat grid; cuts must land on beats | `120` (beat = 0.5s) |
-| `fps` | frame rate | `60` |
-| `size` | `1920x1080` (16:9) or `1080x1920` (9:16) | `1920x1080` |
-| `out` | output filename | `reel.mp4` |
-| `theme` | hex accent color | `#e85d04` |
-| `bg` | background hex | `#0b0b0c` |
-| `fonts` | heading/body/mono/display fonts | template fonts (see §3) |
-| `audio` | `on` or `off` | `on` |
-| `brand` | brand name / site to match (scrape colors, fonts, copy) | — |
-| free text | content: scenes, stats, numbers, taglines, end-card text | — |
+| `agent` (default) | you, the agent running this skill | the command writes `.reel/llm/<key>.prompt.md`, exits **10**; read it, write `.reel/llm/<key>.answer.<json|js>`, re-run the same command |
+| `ollama` / `openai` | a local model (`--model`, `--base-url`) | same prompts, same gates, answers recorded to `.reel/llm/` |
+| `mock` | tests / replays | `--fixtures <dir>` of recorded answers (any past `.reel/llm/`) |
 
-If `brand` is given, extract real hex colors, font families and copy lines from that site (curl/fetch the HTML + CSS) before writing text into the reel.
+Hand-writing is fine too: edit `timeline.json` / `scenes/*.js` directly — the
+same compile/audit/novelty/QC gates apply. Details: `references/director.md`.
 
-**Claims without sources are a QC event, not a blocker.** If the user can't source a number yet, write the reel with it, add no `"sources"` entry (or mark it), and let the Fact Check tab flag it `Medium risk` — say so out loud in the closing echo. Never silently invent a statistic and present it as fact: placeholders stay placeholders.
-
-## 2. Scaffold a project
-
+## 5. Review (always before rendering the whole thing)
 ```bash
-PROJ=<project-dir>            # e.g. ./reel-<slug>
-mkdir -p "$PROJ"
-cp <skill-dir>/templates/{reel.html,render.py,audio.py,events.py,build.sh,validate.py,qc.py,director.py,timeline.json,blank.json,requirements.txt} "$PROJ/"
-cp -r <skill-dir>/fonts "$PROJ/fonts"
+reel.py review <proj>        # contact sheet + audit + novelty + the critique checklist
 ```
+Open `.reel/contact.png`, answer `references/critique.md` in `review.md`, fix,
+repeat. Zero audit errors and novelty OK before any full render.
 
-One-time machine setup (check first; skip if already installed): `pip install -r requirements.txt` (playwright, numpy, openpyxl for the QC workbook; scipy optional), `python -m playwright install chromium`, `ffmpeg` on PATH.
-
-## 3. Compose the timeline (no drawing code)
-
-Open `references/scenes.md` in this skill directory — it is the contract for every scene type and its `p` params. The reel is defined ENTIRELY in `timeline.json`: scenes, durations, content, theme, HUD. `reel.html` derives `CUTS`/`SC`/`IMPACTS`/dispatch from it; `audio.py` derives the whole score (beats, risers, slams, typing clicks, ticks, bell) from the same file. Nothing else needs editing for a normal reel.
-
+## 6. Render
 ```bash
-# mode 1 — the LLM writes bespoke scenes for THIS video (default --bespoke 2),
-# composes the timeline, and the result is render-probed before it freezes
-python3 director.py --mode invent --brief brief.md --model <local-model>
-# (--bespoke 0 = archetypes only — a draft, never a final delivery)
-
-# mode 3 — fill-in-the-blank
-python3 director.py --mode fill --template blank.json --brief brief.md --model <local-model>
-
-# any authored timeline goes through the same gate
-python3 director.py --mode from-file my_idea.json --out timeline.json   # or: python3 validate.py timeline.json
+reel.py run <proj> --draft             # DPR 1: compile → audit → render → audio → build → qc (a few minutes)
+reel.py run <proj> --final --register  # DPR 2, strict claims/novelty; registers the reel in the novelty library
 ```
+Look at 4–6 frames of the MP4 (`ffmpeg -ss <t> -i reel.mp4 -frames:v 1 f.png`),
+especially mid-transition. `.reel/qc_report.xlsx` has the measured specs and
+the human checklist; report its READY line to the user. Live preview:
+open `<proj>/.reel/index.html` in a browser (space, arrows, scrubber, sound).
 
-The director's output is frozen `timeline.json` + `timeline_meta.json` (model, seed, prompt hash, repair flag, bespoke scene names + JS hash, probe report) — re-runs of the renderer are byte-stable because timing lives only in the frozen file.
+## Looks, sound, formats
+- 7 style packs (`reel.py styles`): signal, editorial, swiss, blueprint, soft,
+  terminal, storybook. Override any piece in `timeline.json` `"style"`:
+  palette, fonts, bg, hud, post, camera, transitions, motion, glow, audio, bpm.
+  Per scene: `"look": {"bg", "camera"}`, `"transition": "push"|{...}`.
+  Full menu: `references/styles.md`.
+- Durations in **beats** (`"beats": 4`) survive style/bpm changes; bpm must
+  divide 3600 (90, 100, 120, 144, 150).
+- Score presets: pulse, ambient, minimal, glitch, lofi, cinematic — every cut,
+  slam, typing run and counter gets a sound; `"audio": {"track": "assets/x.mp3"}` for licensed music.
+- 9:16 / 1:1: blueprints and the API are responsive (`U`, `SAFE`); still-check every scene.
 
-Core rules:
-
-- **Timeline first.** Choose scenes for the user's narrative arc (opener → claims → proof → close is the default), assign each a `dur` that is a multiple of the beat (`60/bpm` s — 0.5s at 120bpm), and write each scene's `p` content object. Typical arc: `terminal` (1.5) → `kinetic` (2.5) → `cards` (3) → `counter` or `quote` (3) → `chart` (2.5) → `endcard` (2.5). Swap in `split` for A/B comparisons, `quote` for testimonials.
-- **Recolor via `theme`** (`accent`/`hot`/`bg`/`cream`) and relabel via `hud` (brand/series/line) — do not touch palette constants. `theme` recolors the whole reel including glows, flashes and the post layer.
-- **All times in `p` are relative to the scene start.** Kinetic word `offset`s, chart `impact`, quote `slam` must land on the beat grid (multiples of 0.5s at 120bpm) so hits land on beats.
-- **Validate before rendering:** `python3 validate.py` — checks required params, beat-grid cuts, whole-frame boundaries, and word/impact offsets. Never run a full render with a failing validation.
-- **If the user needs a scene type that doesn't exist**, do NOT edit reel.html — create `scene_custom.js` in the project dir and add `defineScene('myscene', (lt, d, p) => {...})` (all timing relative to `d`). It runs in reel.html's scope, so every motion primitive is available (`prog`, easings, `txt`, `tw`, `typed`, `rrect`, `rng`, `wipeLine`, `dashed`, `A()`/`Hh()` theme colors, `W/H/DPR`). Then `python3 validate.py timeline.json --allow-custom`. Render stills of the new scene at 25/50/75/100% of its duration before trusting it. Use `DPR`-aware `shadowBlur` (`*DPR`) and measure the FINAL string with `tw()` before positioning labels next to counters. Add the scene's `slams` via the scene's `slams:[]` field or return-time events are automatic (cuts/impacts derive from timing). Full contract + worked example: `references/blueprints.md`.
-- **Vertical (9:16):** `"w":1080,"h":1920` in timeline.json + `OUT_W=1080 OUT_H=1920` in build.sh. The 16:9 scenes are laid out for 1920×1080; a 9:16 reel needs a vertical layout pass on the scenes (check stills closely).
-
-## 4. Review loop (always, before full render)
-
-1. `python3 validate.py` first, then `python3 render.py stills <times>` — pick 1–2 times per scene (mid-entrance and settled). Stills are PNG (no JPEG artifacts masking banding). Render at `DPR=2` (default) for 2x supersampled pixels; `DPR=1 python3 render.py stills ...` for quick checks.
-2. Read the stills with the image tool (or build a contact sheet with `ffmpeg -i t%05.2f.jpg ...`). Check specifically for:
-   - overlapping text (labels next to counters whose digits change width — measure the FINAL string with `tw()`, not the current one; the template's "tok/s" label uses `tw('888',BF)` deliberately)
-   - HUD element collisions (REC dot vs timecode vs brand line)
-   - visible seams in gradients/glow (e.g., grid floor meeting glow)
-   - flashes washing out the frame (keep flash alpha ≤ 0.3)
-   - text clipping outside its clip rect
-3. Fix, re-still only the changed times, then full render: `./build.sh` (or `OUT=... ./build.sh`). It runs render.py (LOSSLESS FFV1 `frames.mkv`, 2x res with `DPR=2`), audio.py (score derived from the timeline), then ONE lossy encode (Lanczos downscale, BT.709 tags, `yuv420p`, CRF 17 — override with `CRF=`, size with `OUT_W/OUT_H`). Expect ~6–10 min for 15s at 1080p60 with `DPR=2` (~3–4 min with `DPR=1`).
-4. After the full render, spot-check 3–4 frames from the MP4 (`ffmpeg -ss <t> -i reel.mp4 -frames:v 1 check.jpg`) and report the output path + duration to the user.
-5. **Run QC:** `python3 qc.py reel.mp4 timeline.json` — auto-measures the technical block (codecs, color tags, frame count, loudness via ebur128, black/freeze detection, fast-start) and writes `qc_report.md` + `qc_report.xlsx` (Summary / Test Sequence / Cue Sheet / Tech Specs / Fact Check). Audio-to-cut sync is exact by construction (render + audio share `events.py`); the Fact Check tab lists every on-screen string — numeric claims need a source before publishing (add a `"sources": {"claim": "url"}` map to timeline.json to auto-verify). Fix any FAIL, re-render, re-run. Details: `references/qc.md`.
-
-## 5. Live preview
-
-Tell the user they can open `reel.html` in Chrome for a playable preview (space = play/pause, arrows = step a frame, draggable scrubber, sound from `audio.wav`; if `file://` blocks audio, `python -m http.server` in the project dir). After editing, they refresh; you can also run `python render.py stills` for instant checks without a full render.
+## Honest scope
+Draws: typography, data, diagrams, UI mockups, code, maps/routes, and flat
+2D vector illustration — characters, vehicles, towns, props, camera moves
+through a world. Does not do: photoreal footage, 3D renders, lip-synced
+characters, or copyrighted characters/logos you don't have rights to.
